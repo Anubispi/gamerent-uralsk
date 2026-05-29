@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GameRent — Орал</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+        @theme inline {
+            --color-background: var(--background);
+            --color-foreground: var(--foreground);
+            --color-primary: var(--primary);
+            --color-primary-foreground: var(--primary-foreground);
+            --color-secondary: var(--secondary);
+            --color-secondary-foreground: var(--secondary-foreground);
+            --color-muted: var(--muted);
+            --color-muted-foreground: var(--muted-foreground);
+            --color-accent: var(--accent);
+            --color-accent-foreground: var(--accent-foreground);
+            --color-destructive: var(--destructive);
+            --color-card: var(--card);
+            --color-card-foreground: var(--card-foreground);
+            --color-border: var(--border);
+            --color-input: var(--input);
+            --color-ring: var(--ring);
+        }
+
+        @theme {
+            --radius-xs: calc(var(--radius) - 8px);
+            --radius-sm: calc(var(--radius) - 4px);
+            --radius-md: calc(var(--radius) - 2px);
+            --radius-lg: var(--radius);
+            --radius-xl: calc(var(--radius) + 4px);
+            --radius-2xl: calc(var(--radius) + 8px);
+            --radius-3xl: calc(var(--radius) + 16px);
+            --radius-4xl: calc(var(--radius) + 24px);
+        }
+
+        * {
+            corner-shape: var(--shape, round);
+        }
+
+        .rounded-full, .rounded-none,
+        .rounded-t-full, .rounded-b-full,
+        .rounded-l-full, .rounded-r-full {
+            corner-shape: round;
+        }
+
+        @utility rounded-* {
+            border-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+        }
+
+        @utility rounded-t-* {
+            border-top-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+            border-top-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+        }
+
+        @utility rounded-b-* {
+            border-bottom-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+            border-bottom-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+        }
+
+        @utility rounded-tl-* {
+            border-top-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+        }
+
+        @utility rounded-tr-* {
+            border-top-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+        }
+
+        @utility rounded-bl-* {
+            border-bottom-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+        }
+
+        @utility rounded-br-* {
+            border-bottom-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
+        }
+
+        :root {
+            --shape: squircle;
+            --shape-multiplier: 1;
+            --background: #F9F9FB;
+            --foreground: #0F1014;
+            --primary: #0F1014;
+            --primary-foreground: #FFFFFF;
+            --secondary: #F2F2F5;
+            --secondary-foreground: #0F1014;
+            --muted: #E5E5EA;
+            --muted-foreground: #73737A;
+            --accent: #0055FF;
+            --accent-foreground: #FFFFFF;
+            --destructive: #E63946;
+            --card: #FFFFFF;
+            --card-foreground: #0F1014;
+            --border: #E5E5EA;
+            --input: #F2F2F5;
+            --ring: #0055FF;
+            --font-sans: "DM Sans";
+            --font-heading: "DM Sans";
+            --font-serif: "Playfair Display";
+            --font-mono: "JetBrains Mono";
+            --radius: 1.5rem;
+        }
+
+        @supports (corner-shape: squircle) {
+            :root {
+                --shape-multiplier: 2.5;
+            }
+        }
+
+        iconify-icon:not([width]):not([height]) {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+        }
+
+        iconify-icon.icon-fallback {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-sans), sans-serif;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        *, *::before, *::after {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+        /* Screen transitions */
+        .screen {
+            display: none;
+            min-height: 100dvh;
+        }
+
+            .screen.active {
+                display: block;
+            }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .screen.active {
+            animation: slideIn 0.22s cubic-bezier(.4,0,.2,1);
+        }
+
+        .screen.slide-left {
+            animation: slideInLeft 0.22s cubic-bezier(.4,0,.2,1);
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground font-sans">
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 1: AUTH
+    ══════════════════════════════════════════ -->
+    <div id="screen-auth" class="screen active">
+        <div class="min-h-screen bg-background flex flex-col px-6 py-12">
+            <div class="flex-1 flex flex-col justify-center items-center text-center">
+                <div class="w-24 h-24 bg-primary rounded-[2rem] flex items-center justify-center mb-8 shadow-2xl shadow-primary/20">
+                    <iconify-icon icon="solar:gamepad-bold" class="text-5xl text-primary-foreground"></iconify-icon>
+                </div>
+                <h1 class="text-3xl font-extrabold mb-3">Қош келдіңіз!</h1>
+                <p class="text-muted-foreground font-medium mb-12 max-w-[280px]">Оралдағы ең үздік ойын консольдері сізді күтуде</p>
+                <div class="w-full space-y-4">
+                    <div class="space-y-2 text-left">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-4">Атыңыз</label>
+                        <div class="bg-input rounded-full h-16 flex items-center px-6 gap-3 border border-transparent focus-within:border-primary/20 transition-all">
+                            <iconify-icon icon="solar:user-bold" class="text-xl text-muted-foreground"></iconify-icon>
+                            <input id="auth-name" type="text" placeholder="Атыңызды жазыңыз"
+                                   class="bg-transparent border-none outline-none text-base w-full font-bold" />
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-left">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-4">Телефон нөмірі</label>
+                        <div class="bg-input rounded-full h-16 flex items-center px-6 gap-3 border border-transparent focus-within:border-primary/20 transition-all">
+                            <span class="font-bold text-foreground">+7</span>
+                            <input id="auth-phone" type="tel" placeholder="707 000 00 00"
+                                   class="bg-transparent border-none outline-none text-base w-full font-bold tracking-wider" />
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-left">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-4">Аккаунт түрі</label>
+                        <div class="flex gap-2 p-1 bg-secondary rounded-full">
+                            <button id="role-renter" onclick="setAuthRole('renter')" class="flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm">Арендатор</button>
+                            <button id="role-owner" onclick="setAuthRole('owner')" class="flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm">Арендодатель</button>
+                        </div>
+                    </div>
+                    <button onclick="authSubmit()"
+                            class="w-full bg-primary text-primary-foreground h-16 rounded-full font-bold text-base shadow-lg shadow-primary/10 active:scale-[0.98] transition-all">
+                        Аккаунт ашу / кіру
+                    </button>
+                    <div class="relative py-4">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-border"></div></div>
+                        <div class="relative flex justify-center text-xs uppercase">
+                            <span class="bg-background px-4 text-muted-foreground font-bold tracking-widest">деректер сақталады</span>
+                        </div>
+                    </div>
+                    <button onclick="quickDemoAccount()"
+                            class="w-full bg-card border border-border text-foreground h-16 rounded-full font-bold text-base flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                        <iconify-icon icon="solar:login-2-bold" class="text-xl"></iconify-icon>Жылдам тест аккаунт
+                    </button>
+                </div>
+            </div>
+            <div class="mt-auto pt-8 text-center">
+                <p class="text-[11px] text-muted-foreground leading-relaxed px-4 font-medium">
+                    Тіркелу арқылы сіз біздің
+                    <a href="#" class="text-primary font-bold underline">Пайдалану шарттарымызбен</a> және
+                    <a href="#" class="text-primary font-bold underline">Құпиялылық саясатымызбен</a> келісесіз.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 2: HOME (Catalog)
+    ══════════════════════════════════════════ -->
+    <div id="screen-home" class="screen">
+        <div class="min-h-screen bg-background text-foreground pb-28">
+            <header class="px-5 pt-12 pb-4 bg-background sticky top-0 z-10">
+                <div class="flex justify-between items-center mb-5">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight">Каталог</h1>
+                        <p class="text-muted-foreground text-sm font-medium mt-1">Орал қ. бойынша жалға алу</p>
+                    </div>
+                    <button class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+                        <iconify-icon icon="solar:bell-bing-bold" class="text-xl"></iconify-icon>
+                    </button>
+                </div>
+                <div class="flex gap-3 items-center">
+                    <div class="flex-1 bg-input rounded-full h-12 flex items-center px-4 gap-3">
+                        <iconify-icon icon="solar:magnifer-linear" class="text-muted-foreground text-xl"></iconify-icon>
+                        <input type="text" id="home-search" oninput="filterCatalog()" placeholder="Консоль немесе ойын іздеу..."
+                               class="bg-transparent border-none outline-none text-sm w-full placeholder-muted-foreground font-medium" />
+                    </div>
+                    <button class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground flex-shrink-0">
+                        <iconify-icon icon="solar:tuning-square-2-bold" class="text-xl"></iconify-icon>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Category filter -->
+            <div class="px-5 mb-6 overflow-x-auto">
+                <div class="flex gap-2 w-max">
+                    <button onclick="setCat('all')" id="cat-all" class="cat-btn px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-bold">Барлығы</button>
+                    <button onclick="setCat('PlayStation')" id="cat-PlayStation" class="cat-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold">PlayStation</button>
+                    <button onclick="setCat('Xbox')" id="cat-Xbox" class="cat-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold">Xbox</button>
+                    <button onclick="setCat('VR')" id="cat-VR" class="cat-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold">VR</button>
+                </div>
+            </div>
+
+            <main id="catalog-list" class="px-5 flex flex-col gap-5"></main>
+
+            <!-- Bottom nav -->
+            <nav class="fixed bottom-6 left-5 right-5 bg-card/90 backdrop-blur-xl border border-border rounded-full flex justify-between items-center px-6 py-4 shadow-lg z-20">
+                <button class="flex flex-col items-center gap-1 text-primary">
+                    <iconify-icon icon="solar:home-smile-bold" class="text-2xl"></iconify-icon>
+                    <span class="text-[10px] font-bold">Басты бет</span>
+                </button>
+                <button onclick="goTo('bookings-list')" class="flex flex-col items-center gap-1 text-muted-foreground">
+                    <iconify-icon icon="solar:calendar-bold" class="text-2xl"></iconify-icon>
+                    <span class="text-[10px] font-bold">Брондаулар</span>
+                </button>
+                <button onclick="goTo('profile')" class="flex flex-col items-center gap-1 text-muted-foreground">
+                    <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
+                    <span class="text-[10px] font-bold">Профиль</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 3: BOOKING
+    ══════════════════════════════════════════ -->
+    <div id="screen-booking" class="screen">
+        <div class="min-h-screen bg-background text-foreground pb-32">
+            <header class="px-5 pt-12 pb-6 flex items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md z-10">
+                <button onclick="goBack()" class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+                    <iconify-icon icon="solar:alt-arrow-left-linear" class="text-2xl"></iconify-icon>
+                </button>
+                <h1 class="text-xl font-extrabold">Брондауды рәсімдеу</h1>
+            </header>
+            <main class="px-5 space-y-8">
+                <!-- Selected console card -->
+                <div class="bg-card rounded-[1.5rem] p-4 flex items-center gap-4 border border-border shadow-sm">
+                    <div id="booking-img-wrap" class="w-20 h-20 bg-secondary rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <iconify-icon id="booking-icon" icon="solar:gamepad-bold-duotone" class="text-4xl text-accent"></iconify-icon>
+                    </div>
+                    <div>
+                        <h2 id="booking-name" class="font-bold text-lg">—</h2>
+                        <p id="booking-price-label" class="text-accent font-bold text-sm">— ₸ <span class="text-muted-foreground font-medium text-xs">/ тәулік</span></p>
+                    </div>
+                </div>
+
+                <!-- Calendar -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-base px-2">Күндерді таңдаңыз</h3>
+                    <div class="bg-card rounded-[1.5rem] p-5 border border-border">
+                        <div class="flex justify-between items-center mb-6">
+                            <span id="cal-month-label" class="font-bold">—</span>
+                            <div class="flex gap-2">
+                                <button onclick="calPrev()" class="p-2 bg-secondary rounded-full"><iconify-icon icon="solar:alt-arrow-left-linear"></iconify-icon></button>
+                                <button onclick="calNext()" class="p-2 bg-secondary rounded-full"><iconify-icon icon="solar:alt-arrow-right-linear"></iconify-icon></button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-y-3 text-center text-[10px] font-bold text-muted-foreground uppercase mb-1">
+                            <span>Дүй</span><span>Сей</span><span>Сәр</span><span>Бей</span><span>Жұм</span><span>Сен</span><span>Жек</span>
+                        </div>
+                        <div id="cal-grid" class="grid grid-cols-7 gap-y-1 text-center"></div>
+                    </div>
+                </div>
+
+                <!-- Delivery -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-base px-2">Жеткізу мәліметтері</h3>
+                    <div class="bg-card rounded-[1.5rem] p-5 border border-border space-y-4">
+                        <div class="flex gap-2 p-1 bg-secondary rounded-full">
+                            <button id="del-btn" onclick="setDelivery(true)" class="flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm">Жеткізу</button>
+                            <button id="pickup-btn" onclick="setDelivery(false)" class="flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm">Өзі алып кету</button>
+                        </div>
+                        <div id="address-wrap" class="space-y-2">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Мекенжай (Орал қ.)</label>
+                            <input type="text" placeholder="Мөлтек аудан, үй, пәтер..."
+                                   class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Байланыс телефоны</label>
+                            <input type="tel" placeholder="+7 707 000 00 00"
+                                   class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div id="booking-summary" class="bg-primary text-primary-foreground rounded-[2rem] p-6 space-y-4">
+                    <div class="flex justify-between items-center text-sm font-medium opacity-80">
+                        <span id="sum-days">Мерзімі: — тәулік</span><span id="sum-sub">— ₸</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm font-medium opacity-80">
+                        <span>Жеткізу:</span><span>Тегін</span>
+                    </div>
+                    <div class="pt-4 border-t border-white/10 flex justify-between items-center">
+                        <span class="font-bold text-lg">Барлығы:</span>
+                        <span id="sum-total" class="text-2xl font-black">— ₸</span>
+                    </div>
+                </div>
+
+                <button onclick="confirmBooking()"
+                        class="w-full bg-accent text-accent-foreground h-16 rounded-full font-bold text-lg shadow-xl shadow-accent/20 active:scale-[0.98] transition-all">
+                    Тапсырысты растау
+                </button>
+            </main>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 4: BOOKING SUCCESS
+    ══════════════════════════════════════════ -->
+    <div id="screen-booking-success" class="screen">
+        <div class="min-h-screen bg-background flex flex-col items-center justify-center px-6 text-center gap-6">
+            <div class="w-24 h-24 bg-green-100 rounded-[2rem] flex items-center justify-center shadow-xl shadow-green-200">
+                <iconify-icon icon="solar:check-circle-bold" class="text-5xl text-green-600"></iconify-icon>
+            </div>
+            <div>
+                <h1 class="text-2xl font-extrabold mb-2">Тапсырыс расталды!</h1>
+                <p class="text-muted-foreground font-medium max-w-[260px] mx-auto" id="success-msg">Консоль сізге жеткізіледі</p>
+            </div>
+            <div id="success-card" class="w-full bg-card border border-border rounded-[1.5rem] p-5 space-y-3 text-left">
+                <div class="flex justify-between text-sm"><span class="text-muted-foreground font-medium">Консоль</span><span id="sc-name" class="font-bold">—</span></div>
+                <div class="flex justify-between text-sm"><span class="text-muted-foreground font-medium">Мерзімі</span><span id="sc-dates" class="font-bold">—</span></div>
+                <div class="flex justify-between text-sm"><span class="text-muted-foreground font-medium">Сома</span><span id="sc-total" class="font-bold text-accent">—</span></div>
+            </div>
+            <button onclick="goTo('bookings-list')"
+                    class="w-full bg-primary text-primary-foreground h-14 rounded-full font-bold">
+                Брондауларымды көру
+            </button>
+            <button onclick="goTo('home')" class="w-full h-14 rounded-full bg-secondary text-secondary-foreground font-bold">
+                Каталогқа оралу
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 5: MY BOOKINGS LIST
+    ══════════════════════════════════════════ -->
+    <div id="screen-bookings-list" class="screen">
+        <div class="min-h-screen bg-background pb-28">
+            <header class="px-5 pt-12 pb-6 flex items-center gap-4 sticky top-0 bg-background z-10">
+                <button onclick="goBack()" class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+                    <iconify-icon icon="solar:alt-arrow-left-linear" class="text-2xl"></iconify-icon>
+                </button>
+                <h1 class="text-xl font-extrabold">Менің брондауларым</h1>
+            </header>
+            <div id="my-bookings-list" class="px-5 space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 6: PROFILE
+    ══════════════════════════════════════════ -->
+    <div id="screen-profile" class="screen">
+        <div class="min-h-screen bg-background pb-28">
+            <header class="px-5 pt-12 pb-6 flex items-center justify-between sticky top-0 bg-background z-10">
+                <h1 class="text-2xl font-extrabold">Профиль</h1>
+                <button id="profile-admin-btn" onclick="goTo('admin')" class="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-full text-xs font-bold">
+                    <iconify-icon icon="solar:shield-keyhole-bold" class="text-sm"></iconify-icon>
+                    Құрылғылар
+                </button>
+            </header>
+            <main class="px-5 space-y-4">
+                <!-- Avatar -->
+                <div class="bg-card border border-border rounded-[1.5rem] p-5 flex items-center gap-4">
+                    <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
+                        <span id="profile-initial" class="text-primary-foreground text-2xl font-extrabold">U</span>
+                    </div>
+                    <div>
+                        <h2 id="profile-name" class="font-extrabold text-lg">—</h2>
+                        <p id="profile-phone" class="text-muted-foreground text-sm font-medium">—</p>
+                        <p id="profile-role" class="text-accent text-xs font-bold mt-1">—</p>
+                    </div>
+                </div>
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-card border border-border rounded-[1.5rem] p-4 text-center">
+                        <p id="profile-orders" class="text-2xl font-extrabold text-accent">0</p>
+                        <p class="text-muted-foreground text-xs font-medium mt-1">Тапсырыс</p>
+                    </div>
+                    <div class="bg-card border border-border rounded-[1.5rem] p-4 text-center">
+                        <p id="profile-spent" class="text-2xl font-extrabold">0 ₸</p>
+                        <p class="text-muted-foreground text-xs font-medium mt-1">Жалпы сома</p>
+                    </div>
+                </div>
+                <!-- Menu -->
+                <div class="bg-card border border-border rounded-[1.5rem] overflow-hidden">
+                    <button onclick="goTo('bookings-list')" class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors border-b border-border">
+                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:calendar-bold" class="text-xl text-accent"></iconify-icon>
+                        </div>
+                        <span class="font-bold text-sm flex-1 text-left">Брондауларым</span>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
+                    </button>
+                    <button id="owner-add-device-btn" onclick="goTo('admin'); adminTab('consoles'); openModal('modal-add-console')" class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors border-b border-border hidden">
+                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:add-circle-bold" class="text-xl text-green-600"></iconify-icon>
+                        </div>
+                        <span class="font-bold text-sm flex-1 text-left">Құрылғы қосу</span>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
+                    </button>
+                    <button class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors border-b border-border">
+                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:heart-bold" class="text-xl text-destructive"></iconify-icon>
+                        </div>
+                        <span class="font-bold text-sm flex-1 text-left">Таңдаулылар</span>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
+                    </button>
+                    <button class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors">
+                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="solar:settings-bold" class="text-xl text-muted-foreground"></iconify-icon>
+                        </div>
+                        <span class="font-bold text-sm flex-1 text-left">Параметрлер</span>
+                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
+                    </button>
+                </div>
+                <button onclick="logout()" class="w-full h-14 rounded-full bg-destructive/10 text-destructive font-bold text-sm">
+                    Шығу
+                </button>
+            </main>
+            <nav class="fixed bottom-6 left-5 right-5 bg-card/90 backdrop-blur-xl border border-border rounded-full flex justify-between items-center px-6 py-4 shadow-lg z-20">
+                <button onclick="goTo('home')" class="flex flex-col items-center gap-1 text-muted-foreground">
+                    <iconify-icon icon="solar:home-smile-bold" class="text-2xl"></iconify-icon>
+                    <span class="text-[10px] font-bold">Басты бет</span>
+                </button>
+                <button onclick="goTo('bookings-list')" class="flex flex-col items-center gap-1 text-muted-foreground">
+                    <iconify-icon icon="solar:calendar-bold" class="text-2xl"></iconify-icon>
+                    <span class="text-[10px] font-bold">Брондаулар</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-primary">
+                    <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
+                    <span class="text-[10px] font-bold">Профиль</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SCREEN 7: ADMIN
+    ══════════════════════════════════════════ -->
+    <div id="screen-admin" class="screen">
+        <div class="min-h-screen bg-background text-foreground pb-28">
+            <header class="px-5 pt-12 pb-4 bg-background sticky top-0 z-20">
+                <div class="flex justify-between items-center mb-5">
+                    <div class="flex items-center gap-3">
+                        <button onclick="goBack()" class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
+                            <iconify-icon icon="solar:alt-arrow-left-linear" class="text-xl"></iconify-icon>
+                        </button>
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight">Басқару панелі</h1>
+                            <p class="text-muted-foreground text-sm font-medium mt-0.5">Консоль менеджменті</p>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                        <iconify-icon icon="solar:shield-keyhole-bold" class="text-xl"></iconify-icon>
+                    </div>
+                </div>
+                <div class="flex gap-2 overflow-x-auto">
+                    <button onclick="adminTab('dashboard')" id="atab-dashboard" class="atab-btn px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-bold whitespace-nowrap">Дашборд</button>
+                    <button onclick="adminTab('consoles')" id="atab-consoles" class="atab-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold whitespace-nowrap">Консольдер</button>
+                    <button onclick="adminTab('orders')" id="atab-orders" class="atab-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold whitespace-nowrap">Тапсырыстар</button>
+                    <button onclick="adminTab('clients')" id="atab-clients" class="atab-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold whitespace-nowrap">Клиенттер</button>
+                </div>
+            </header>
+
+            <main class="px-5 space-y-5">
+
+                <!-- DASHBOARD -->
+                <div id="aview-dashboard">
+                    <div class="grid grid-cols-2 gap-3 mb-5">
+                        <div class="bg-primary text-primary-foreground rounded-[1.5rem] p-4">
+                            <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center mb-3">
+                                <iconify-icon icon="solar:money-bag-bold" class="text-lg"></iconify-icon>
+                            </div>
+                            <p class="text-white/70 text-xs font-medium mb-1">Бүгін табыс</p>
+                            <p class="text-2xl font-extrabold">42 000 ₸</p>
+                        </div>
+                        <div class="bg-card rounded-[1.5rem] p-4 border border-border">
+                            <div class="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center mb-3">
+                                <iconify-icon icon="solar:calendar-bold" class="text-lg text-accent"></iconify-icon>
+                            </div>
+                            <p class="text-muted-foreground text-xs font-medium mb-1">Ай табысы</p>
+                            <p class="text-2xl font-extrabold">840 000 ₸</p>
+                        </div>
+                        <div class="bg-card rounded-[1.5rem] p-4 border border-border">
+                            <div class="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center mb-3">
+                                <iconify-icon icon="solar:gamepad-bold" class="text-lg text-green-600"></iconify-icon>
+                            </div>
+                            <p class="text-muted-foreground text-xs font-medium mb-1">Бос консольдер</p>
+                            <p id="stat-available" class="text-2xl font-extrabold">— / —</p>
+                        </div>
+                        <div class="bg-card rounded-[1.5rem] p-4 border border-border">
+                            <div class="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center mb-3">
+                                <iconify-icon icon="solar:box-bold" class="text-lg text-orange-500"></iconify-icon>
+                            </div>
+                            <p class="text-muted-foreground text-xs font-medium mb-1">Белсенді брон</p>
+                            <p id="stat-active-orders" class="text-2xl font-extrabold">—</p>
+                        </div>
+                    </div>
+                    <div class="bg-card rounded-[1.5rem] p-5 border border-border mb-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-base">Соңғы тапсырыстар</h3>
+                            <button onclick="adminTab('orders')" class="text-xs font-bold text-accent bg-accent/10 px-3 py-1 rounded-full">Барлығы</button>
+                        </div>
+                        <div id="admin-recent-orders" class="space-y-3"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="adminTab('consoles')" class="bg-card rounded-[1.5rem] p-4 border border-border flex flex-col items-center gap-2 active:scale-95 transition-all">
+                            <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                                <iconify-icon icon="solar:add-circle-bold" class="text-xl text-accent"></iconify-icon>
+                            </div>
+                            <span class="text-[11px] font-bold text-center leading-tight">Консоль қосу</span>
+                        </button>
+                        <button onclick="adminTab('orders')" class="bg-card rounded-[1.5rem] p-4 border border-border flex flex-col items-center gap-2 active:scale-95 transition-all">
+                            <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                                <iconify-icon icon="solar:list-check-bold" class="text-xl text-green-600"></iconify-icon>
+                            </div>
+                            <span class="text-[11px] font-bold text-center leading-tight">Брондаулар</span>
+                        </button>
+                        <button onclick="adminTab('clients')" class="bg-card rounded-[1.5rem] p-4 border border-border flex flex-col items-center gap-2 active:scale-95 transition-all">
+                            <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                                <iconify-icon icon="solar:users-group-rounded-bold" class="text-xl text-orange-500"></iconify-icon>
+                            </div>
+                            <span class="text-[11px] font-bold text-center leading-tight">Клиенттер</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONSOLES -->
+                <div id="aview-consoles" class="hidden space-y-4">
+                    <button onclick="openModal('modal-add-console')" class="w-full h-14 rounded-full bg-accent text-accent-foreground font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
+                        <iconify-icon icon="solar:add-circle-bold" class="text-xl"></iconify-icon>Жаңа консоль қосу
+                    </button>
+                    <div id="admin-console-list" class="space-y-4"></div>
+                </div>
+
+                <!-- ORDERS -->
+                <div id="aview-orders" class="hidden space-y-4">
+                    <div class="flex gap-2 overflow-x-auto">
+                        <button onclick="adminOrderFilter('all')" id="aof-all" class="aof-btn px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs font-bold whitespace-nowrap">Барлығы</button>
+                        <button onclick="adminOrderFilter('active')" id="aof-active" class="aof-btn px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-xs font-bold whitespace-nowrap">Белсенді</button>
+                        <button onclick="adminOrderFilter('pending')" id="aof-pending" class="aof-btn px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-xs font-bold whitespace-nowrap">Күту</button>
+                        <button onclick="adminOrderFilter('done')" id="aof-done" class="aof-btn px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-xs font-bold whitespace-nowrap">Аяқталды</button>
+                    </div>
+                    <div id="admin-orders-list" class="space-y-3"></div>
+                </div>
+
+                <!-- CLIENTS -->
+                <div id="aview-clients" class="hidden space-y-4">
+                    <div class="bg-input rounded-full h-12 flex items-center px-4 gap-3">
+                        <iconify-icon icon="solar:magnifer-linear" class="text-muted-foreground text-xl"></iconify-icon>
+                        <input type="text" id="admin-client-search" oninput="renderAdminClients()" placeholder="Клиент іздеу..."
+                               class="bg-transparent border-none outline-none text-sm w-full placeholder-muted-foreground font-medium" />
+                    </div>
+                    <div id="admin-clients-list" class="space-y-3"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ══════════════════ MODALS ══════════════════ -->
+    <!-- Add console -->
+    <div id="modal-add-console" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-end">
+        <div class="w-full bg-card rounded-t-[2rem] p-6 pb-10 space-y-4">
+            <div class="w-12 h-1.5 bg-muted rounded-full mx-auto mb-2"></div>
+            <h2 class="text-xl font-extrabold">Консоль қосу</h2>
+            <div class="space-y-3">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Атауы</label>
+                    <input type="text" id="nc-name" placeholder="PlayStation 5 Pro" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Баға (₸/тәулік)</label>
+                    <input type="number" id="nc-price" placeholder="7000" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Категория</label>
+                    <select id="nc-cat" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none appearance-none">
+                        <option>PlayStation</option>
+                        <option>Xbox</option>
+                        <option>VR</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Сипаттама</label>
+                    <input type="text" id="nc-desc" placeholder="4K Gaming • 2 Джойстик" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
+                </div>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeModal('modal-add-console')" class="flex-1 h-14 rounded-full bg-secondary text-secondary-foreground font-bold text-sm">Болдырмау</button>
+                <button onclick="adminAddConsole()" class="flex-1 h-14 rounded-full bg-primary text-primary-foreground font-bold text-sm">Қосу</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit console -->
+    <div id="modal-edit-console" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-end">
+        <div class="w-full bg-card rounded-t-[2rem] p-6 pb-10 space-y-4">
+            <div class="w-12 h-1.5 bg-muted rounded-full mx-auto mb-2"></div>
+            <h2 class="text-xl font-extrabold">Консольді өңдеу</h2>
+            <input type="hidden" id="ec-id" />
+            <div class="space-y-3">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Атауы</label>
+                    <input type="text" id="ec-name" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Баға (₸)</label>
+                    <input type="number" id="ec-price" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Статус</label>
+                    <select id="ec-status" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none appearance-none">
+                        <option value="available">Қолжетімді</option>
+                        <option value="unavailable">Қолжетімсіз</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeModal('modal-edit-console')" class="flex-1 h-14 rounded-full bg-secondary text-secondary-foreground font-bold text-sm">Болдырмау</button>
+                <button onclick="adminSaveEdit()" class="flex-1 h-14 rounded-full bg-primary text-primary-foreground font-bold text-sm">Сақтау</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed top-6 left-5 right-5 bg-primary text-primary-foreground py-4 px-5 rounded-2xl font-bold text-sm z-[99] shadow-xl hidden">
+        <div class="flex items-center gap-3">
+            <iconify-icon icon="solar:check-circle-bold" class="text-xl text-green-300 flex-shrink-0"></iconify-icon>
+            <span id="toast-msg"></span>
+        </div>
+    </div>
+
+    <!-- ══════════════════ SCRIPT ══════════════════ -->
+    <script>
+    // ─── SHARED DATA ───────────────────────────────
+    let consoles = [
+      { id:1, name:"PlayStation 5",   cat:"PlayStation", desc:"4K Gaming • 2 Джойстик",            price:7000, status:"available",   rentals:24,
+        img:"https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/DZyfg8AM8Nq/components/3XPiwsethM9.png" },
+      { id:2, name:"Xbox Series X",   cat:"Xbox",        desc:"Game Pass Ultimate • 2 Джойстик",   price:6000, status:"available",   rentals:18,
+        img:"https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/DZyfg8AM8Nq/components/QY5XJMBgDZh.png" },
+      { id:3, name:"PlayStation 4 Pro",cat:"PlayStation",desc:"4K Gaming • 2 Джойстик",             price:5000, status:"unavailable", rentals:31, img:null },
+      { id:4, name:"PlayStation VR2", cat:"VR",          desc:"VR Headset • PS5 арналған",          price:8000, status:"available",   rentals:9,  img:null },
+      { id:5, name:"Xbox Series S",   cat:"Xbox",        desc:"Game Pass • 1 Джойстик",             price:4500, status:"available",   rentals:14, img:null },
+    ];
+
+    let adminOrders = [
+      {id:1,console:"PlayStation 5",   client:"Асель Қалиева",    phone:"+7 701 234 56 78",from:"28 мам",to:"30 мам",days:2,total:14000,status:"active"},
+      {id:2,console:"Xbox Series X",   client:"Дамир Нұрланов",   phone:"+7 707 111 22 33",from:"27 мам",to:"29 мам",days:2,total:12000,status:"pending"},
+      {id:3,console:"PlayStation VR2", client:"Берік Мұратов",    phone:"+7 708 555 66 77",from:"28 мам",to:"31 мам",days:3,total:24000,status:"active"},
+      {id:4,console:"Xbox Series S",   client:"Гүлзат Сейтқали",  phone:"+7 702 999 00 11",from:"20 мам",to:"22 мам",days:2,total:9000, status:"done"},
+      {id:5,console:"PlayStation 5",   client:"Арман Жаксыбеков", phone:"+7 705 333 44 55",from:"15 мам",to:"17 мам",days:2,total:14000,status:"done"},
+    ];
+
+    let adminClients = [
+      {id:1,name:"Асель Қалиева",   phone:"+7 701 234 56 78",orders:5,spent:47000},
+      {id:2,name:"Дамир Нұрланов",  phone:"+7 707 111 22 33",orders:3,spent:28000},
+      {id:3,name:"Берік Мұратов",   phone:"+7 708 555 66 77",orders:7,spent:84000},
+      {id:4,name:"Гүлзат Сейтқали", phone:"+7 702 999 00 11",orders:2,spent:15000},
+      {id:5,name:"Арман Жаксыбеков",phone:"+7 705 333 44 55",orders:4,spent:42000},
+    ];
+
+    let myBookings = [];
+    let nextConsoleId = 6;
+    let adminOrderFilter_ = 'all';
+    const STORAGE_KEY = 'gamerent_uralsk_state_v2';
+    let users = [];
+    let currentUser = null;
+    let authRole = 'renter';
+    let memoryState = null;
+
+    function readSavedState() {
+      try {
+        if (window.localStorage) return JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
+      } catch (e) {}
+      return memoryState || {};
+    }
+
+    function writeSavedState(state) {
+      memoryState = state;
+      try {
+        if (window.localStorage) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function normalizePhone(raw) {
+      const digits = (raw || '').replace(/\D/g, '');
+      if (!digits) return '';
+      if (digits.length === 10) return '+7 ' + digits.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+      if (digits.length === 11 && (digits[0] === '7' || digits[0] === '8')) {
+        const d = digits.slice(1);
+        return '+7 ' + d.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+      }
+      return '+7 ' + digits;
+    }
+
+    function saveState() {
+      writeSavedState({
+        consoles, adminOrders, adminClients, users,
+        currentPhone: currentUser ? currentUser.phone : null,
+        nextConsoleId
+      });
+    }
+
+    function loadState() {
+      try {
+        const saved = readSavedState();
+        if (Array.isArray(saved.consoles)) consoles = saved.consoles;
+        if (Array.isArray(saved.adminOrders)) adminOrders = saved.adminOrders;
+        if (Array.isArray(saved.adminClients)) adminClients = saved.adminClients;
+        if (Array.isArray(saved.users)) users = saved.users;
+        if (saved.nextConsoleId) nextConsoleId = saved.nextConsoleId;
+        currentUser = users.find(u => u.phone === saved.currentPhone) || null;
+        myBookings = currentUser ? (currentUser.bookings || []) : [];
+      } catch (e) {
+        console.warn('State load failed', e);
+      }
+    }
+
+    function setAuthRole(role) {
+      authRole = role;
+      document.getElementById('role-renter').className = role === 'renter'
+        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
+        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
+      document.getElementById('role-owner').className = role === 'owner'
+        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
+        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
+    }
+
+    function authSubmit() {
+      const name = document.getElementById('auth-name').value.trim();
+      const phone = normalizePhone(document.getElementById('auth-phone').value);
+      if (!name || !phone || phone.replace(/\D/g, '').length < 11) {
+        showToast('Атыңызды және телефон нөмірін жазыңыз.');
+        return;
+      }
+      let user = users.find(u => u.phone === phone);
+      if (!user) {
+        user = { id: Date.now(), name, phone, role: authRole, bookings: [], orders: 0, spent: 0 };
+        users.push(user);
+        showToast('Аккаунт ашылды!');
+      } else {
+        user.name = name || user.name;
+        user.role = authRole;
+        showToast('Аккаунтқа кірдіңіз!');
+      }
+      currentUser = user;
+      myBookings = currentUser.bookings || [];
+      saveState();
+      goTo(currentUser.role === 'owner' ? 'admin' : 'home');
+    }
+
+    function quickDemoAccount() {
+      document.getElementById('auth-name').value = 'Жаңа қолданушы';
+      document.getElementById('auth-phone').value = '707 000 00 00';
+      authSubmit();
+    }
+
+    function requireAccount() {
+      if (currentUser) return true;
+      showToast('Алдымен аккаунт ашыңыз.');
+      goTo('auth');
+      return false;
+    }
+
+    function isOwner() {
+      return currentUser && currentUser.role === 'owner';
+    }
+
+    function logout() {
+      currentUser = null;
+      myBookings = [];
+      saveState();
+      document.getElementById('auth-name').value = '';
+      document.getElementById('auth-phone').value = '';
+      goTo('auth');
+    }
+
+    // ─── NAVIGATION ────────────────────────────────
+    let history_ = ['auth'];
+    function goTo(name, leftDir = false) {
+      if (name !== 'auth' && !requireAccount()) return;
+      if (name === 'admin' && !isOwner()) {
+        showToast('Құрылғы қосу тек арендодатель аккаунтына қолжетімді.');
+        name = 'profile';
+      }
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active','slide-left'));
+      const next = document.getElementById('screen-' + name);
+      if (!next) return;
+      next.classList.add('active');
+      if (leftDir) next.classList.add('slide-left');
+      history_.push(name);
+      // refresh data on enter
+      if (name === 'home') renderCatalog();
+      if (name === 'booking') initCalendar();
+      if (name === 'bookings-list') renderMyBookings();
+      if (name === 'profile') renderProfile();
+      if (name === 'admin') { renderAdminDashboard(); renderAdminConsoles(); renderAdminOrders(); renderAdminClients(); }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    function goBack() {
+      history_.pop();
+      const prev = history_[history_.length - 1] || 'home';
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active','slide-left'));
+      const el = document.getElementById('screen-' + prev);
+      if (el) { el.classList.add('active','slide-left'); }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+
+    // ─── CATALOG ────────────────────────────────────
+    let currentCat = 'all';
+    function setCat(cat) {
+      currentCat = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.className = 'cat-btn px-5 py-2 rounded-full text-sm font-bold ' +
+          (b.id === 'cat-' + cat ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground');
+      });
+      renderCatalog();
+    }
+    function filterCatalog() { renderCatalog(); }
+
+    const catIcons = {PlayStation:'solar:gamepad-bold-duotone',Xbox:'solar:gamepad-bold',VR:'solar:vr-linear'};
+    const gamesList = {
+      PlayStation:['FC 25','UFC 5','Mortal Kombat 1','GTA V','Spider-Man 2'],
+      Xbox:['Forza Horizon 5','Halo Infinite','Mortal Kombat 11','Sea of Thieves'],
+      VR:['Beat Saber','Superhot VR','Half-Life: Alyx'],
+    };
+
+    function renderCatalog() {
+      const q = (document.getElementById('home-search').value || '').toLowerCase();
+      const list = document.getElementById('catalog-list');
+      const filtered = consoles.filter(c =>
+        (currentCat === 'all' || c.cat === currentCat) &&
+        c.name.toLowerCase().includes(q)
+      );
+      if (!filtered.length) {
+        list.innerHTML = `<div class="text-center py-16 text-muted-foreground font-medium text-sm">Ештеңе табылмады</div>`;
+        return;
+      }
+      list.innerHTML = filtered.map(c => {
+        const avail = c.status === 'available';
+        const games = (gamesList[c.cat] || []).slice(0,3);
+        const extra = (gamesList[c.cat] || []).length - 3;
+        return `
+        <div class="bg-card rounded-[1.5rem] p-5 shadow-sm border border-border flex flex-col ${avail ? '' : 'opacity-70'}">
+          <div class="flex justify-between items-start mb-4">
+            <div class="${avail ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'} px-3 py-1 rounded-full text-xs font-bold tracking-wide">
+              ${avail ? 'ҚОЛЖЕТІМДІ' : 'ҚОЛЖЕТІМСІЗ'}
+            </div>
+            <button class="text-muted-foreground"><iconify-icon icon="solar:heart-angle-linear" class="text-2xl"></iconify-icon></button>
+          </div>
+          <div class="flex items-center justify-center h-40 mb-4 bg-secondary/50 rounded-2xl ${avail ? '' : 'grayscale'}">
+            ${c.img
+              ? `<img src="${c.img}" alt="${c.name}" class="h-32 object-contain" />`
+              : `<iconify-icon icon="${catIcons[c.cat]||'solar:gamepad-bold-duotone'}" class="text-6xl text-muted-foreground"></iconify-icon>`}
+          </div>
+          <div class="flex justify-between items-end mb-4">
+            <div>
+              <h2 class="text-xl font-bold mb-1">${c.name}</h2>
+              <p class="text-muted-foreground text-sm font-medium">${c.desc}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xl font-extrabold">${c.price.toLocaleString()} ₸</span>
+              <span class="text-muted-foreground text-xs font-medium block">/ тәулік</span>
+            </div>
+          </div>
+          <div class="border-t border-border pt-4 mb-5">
+            <p class="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">Топ ойындар ішінде:</p>
+            <div class="flex flex-wrap gap-2">
+              ${games.map(g=>`<span class="px-2 py-1 bg-secondary rounded-md text-xs font-medium">${g}</span>`).join('')}
+              ${extra > 0 ? `<span class="px-2 py-1 bg-secondary rounded-md text-xs font-medium">+${extra} ойын</span>` : ''}
+            </div>
+          </div>
+          ${avail
+            ? `<button onclick="startBooking(${c.id})" class="w-full bg-primary text-primary-foreground py-4 rounded-full font-bold text-sm">Брондау</button>`
+            : `<button class="w-full bg-secondary text-secondary-foreground py-4 rounded-full font-bold text-sm" disabled>Қазір бос емес</button>`
+          }
+        </div>`;
+      }).join('');
+    }
+
+    // ─── PROFILE ────────────────────────────────────
+    function renderProfile() {
+      if (!currentUser) return;
+      const bookings = currentUser.bookings || [];
+      const spent = bookings.reduce((sum, b) => sum + (b.total || 0), 0);
+      currentUser.orders = bookings.length;
+      currentUser.spent = spent;
+      document.getElementById('profile-initial').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
+      document.getElementById('profile-name').textContent = currentUser.name || 'Қолданушы';
+      document.getElementById('profile-phone').textContent = currentUser.phone || '—';
+      document.getElementById('profile-role').textContent = currentUser.role === 'owner' ? 'Арендодатель' : 'Арендатор';
+      document.getElementById('profile-orders').textContent = bookings.length;
+      document.getElementById('profile-spent').textContent = spent.toLocaleString() + ' ₸';
+      document.getElementById('profile-admin-btn').classList.toggle('hidden', currentUser.role !== 'owner');
+      document.getElementById('owner-add-device-btn').classList.toggle('hidden', currentUser.role !== 'owner');
+      saveState();
+    }
+
+    // ─── BOOKING ────────────────────────────────────
+    let bookingConsoleId = null;
+    let calYear, calMonth, selStart = null, selEnd = null;
+    let deliveryMode = true;
+
+    function startBooking(id) {
+      bookingConsoleId = id;
+      const c = consoles.find(x => x.id === id);
+      document.getElementById('booking-name').textContent = c.name;
+      document.getElementById('booking-price-label').innerHTML =
+        `${c.price.toLocaleString()} ₸ <span class="text-muted-foreground font-medium text-xs">/ тәулік</span>`;
+      // icon vs image
+      const wrap = document.getElementById('booking-img-wrap');
+      if (c.img) {
+        wrap.innerHTML = `<img src="${c.img}" class="w-14 object-contain" />`;
+      } else {
+        wrap.innerHTML = `<iconify-icon icon="${catIcons[c.cat]||'solar:gamepad-bold-duotone'}" class="text-4xl text-accent"></iconify-icon>`;
+      }
+      selStart = null; selEnd = null;
+      updateBookingSummary();
+      goTo('booking');
+    }
+
+    function initCalendar() {
+      const now = new Date();
+      calYear = now.getFullYear();
+      calMonth = now.getMonth();
+      renderCalendar();
+    }
+    function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+    function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+    const KK_MONTHS = ['Қаңтар','Ақпан','Наурыз','Сәуір','Мамыр','Маусым','Шілде','Тамыз','Қыркүйек','Қазан','Қараша','Желтоқсан'];
+
+    function renderCalendar() {
+      document.getElementById('cal-month-label').textContent = `${KK_MONTHS[calMonth]} ${calYear}`;
+      const grid = document.getElementById('cal-grid');
+      const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+      const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+      const today = new Date(); today.setHours(0,0,0,0);
+      // Mon-first offset
+      const offset = (firstDay + 6) % 7;
+      let html = '';
+      for (let i = 0; i < offset; i++) html += `<div></div>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(calYear, calMonth, d);
+        const isPast = date < today;
+        let cls = 'h-10 flex items-center justify-center font-medium text-sm rounded-full mx-auto w-10 transition-colors ';
+        if (isPast) { cls += 'text-muted-foreground/30 cursor-not-allowed'; }
+        else if (selStart && selEnd) {
+          const ds = Math.min(selStart,selEnd), de = Math.max(selStart,selEnd);
+          const t = date.getTime();
+          if (t === ds || t === de) cls += 'bg-primary text-primary-foreground font-bold';
+          else if (t > ds && t < de) cls += 'bg-primary/15 text-foreground rounded-none w-full';
+          else cls += 'hover:bg-secondary';
+        } else if (selStart && date.getTime() === selStart) {
+          cls += 'bg-primary text-primary-foreground font-bold';
+        } else { cls += 'hover:bg-secondary'; }
+        html += `<button class="${cls}" onclick="pickDay(${date.getTime()})" ${isPast?'disabled':''}>${d}</button>`;
+      }
+      grid.innerHTML = html;
+    }
+
+    function pickDay(ts) {
+      if (!selStart || (selStart && selEnd)) { selStart = ts; selEnd = null; }
+      else if (ts < selStart) { selEnd = selStart; selStart = ts; }
+      else { selEnd = ts; }
+      renderCalendar();
+      updateBookingSummary();
+    }
+
+    function updateBookingSummary() {
+      const c = consoles.find(x => x.id === bookingConsoleId);
+      if (!c) return;
+      if (selStart && selEnd) {
+        const days = Math.round((selEnd - selStart) / 86400000) + 1;
+        const total = days * c.price;
+        document.getElementById('sum-days').textContent = `Мерзімі: ${days} тәулік`;
+        document.getElementById('sum-sub').textContent = total.toLocaleString() + ' ₸';
+        document.getElementById('sum-total').textContent = total.toLocaleString() + ' ₸';
+      } else {
+        document.getElementById('sum-days').textContent = 'Мерзімі: — тәулік';
+        document.getElementById('sum-sub').textContent = '— ₸';
+        document.getElementById('sum-total').textContent = '— ₸';
+      }
+    }
+
+    function setDelivery(v) {
+      deliveryMode = v;
+      document.getElementById('del-btn').className = v
+        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
+        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
+      document.getElementById('pickup-btn').className = !v
+        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
+        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
+      document.getElementById('address-wrap').style.display = v ? 'block' : 'none';
+    }
+
+    function confirmBooking() {
+      if (!requireAccount()) return;
+      const c = consoles.find(x => x.id === bookingConsoleId);
+      if (!selStart || !selEnd) { showToast('Күндерді таңдаңыз!'); return; }
+      const days = Math.round((selEnd - selStart) / 86400000) + 1;
+      const total = days * c.price;
+      const fmtDate = ts => {
+        const d = new Date(ts);
+        return `${d.getDate()} ${KK_MONTHS[d.getMonth()].slice(0,3).toLowerCase()}`;
+      };
+      const booking = { console: c.name, from: fmtDate(selStart), to: fmtDate(selEnd), days, total, status: 'active' };
+      myBookings.unshift(booking);
+      currentUser.bookings = myBookings;
+      currentUser.orders = myBookings.length;
+      currentUser.spent = myBookings.reduce((sum, b) => sum + (b.total || 0), 0);
+      // success screen
+      document.getElementById('sc-name').textContent = c.name;
+      document.getElementById('sc-dates').textContent = `${booking.from} – ${booking.to}`;
+      document.getElementById('sc-total').textContent = total.toLocaleString() + ' ₸';
+      document.getElementById('success-msg').textContent = deliveryMode ? 'Консоль сізге жеткізіледі' : 'Өзіңіз алып кетуге болады';
+      // add to admin orders
+      adminOrders.unshift({
+        id: adminOrders.length + 10,
+        console: c.name, client: currentUser.name, phone: currentUser.phone,
+        from: booking.from, to: booking.to, days, total, status: 'active'
+      });
+      let client = adminClients.find(x => x.phone === currentUser.phone);
+      if (!client) {
+        client = { id: Date.now(), name: currentUser.name, phone: currentUser.phone, orders: 0, spent: 0 };
+        adminClients.unshift(client);
+      }
+      client.name = currentUser.name;
+      client.orders = (client.orders || 0) + 1;
+      client.spent = (client.spent || 0) + total;
+      saveState();
+      goTo('booking-success');
+    }
+
+    // ─── MY BOOKINGS ────────────────────────────────
+    function renderMyBookings() {
+      const el = document.getElementById('my-bookings-list');
+      if (!myBookings.length) {
+        el.innerHTML = `<div class="text-center py-16 text-muted-foreground font-medium text-sm">Брондаулар жоқ</div>`;
+        return;
+      }
+      const statusCfg = {
+        active: {label:'БЕЛСЕНДІ', bg:'bg-green-100 text-green-700'},
+        pending:{label:'КҮТУ',     bg:'bg-orange-100 text-orange-600'},
+        done:   {label:'АЯҚТАЛДЫ',bg:'bg-muted text-muted-foreground'}
+      };
+      el.innerHTML = myBookings.map(b => {
+        const sc = statusCfg[b.status] || statusCfg.active;
+        return `
+        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm">
+          <div class="flex justify-between items-start mb-3">
+            <span class="${sc.bg} px-3 py-1 rounded-full text-xs font-bold">${sc.label}</span>
+            <span class="font-extrabold text-sm">${b.total.toLocaleString()} ₸</span>
+          </div>
+          <h3 class="font-bold text-lg mb-1">${b.console}</h3>
+          <p class="text-muted-foreground text-sm font-medium">${b.from} – ${b.to} · ${b.days} тәулік</p>
+        </div>`;
+      }).join('');
+    }
+
+    // ─── ADMIN DASHBOARD ────────────────────────────
+    function renderAdminDashboard() {
+      const avail = consoles.filter(c=>c.status==='available').length;
+      document.getElementById('stat-available').textContent = `${avail} / ${consoles.length}`;
+      const active = adminOrders.filter(o=>o.status==='active').length;
+      document.getElementById('stat-active-orders').textContent = active;
+      const recent = adminOrders.slice(0,3);
+      document.getElementById('admin-recent-orders').innerHTML = recent.map(o => `
+        <div class="flex items-center gap-3 p-3 bg-secondary rounded-2xl">
+          <div class="w-10 h-10 bg-card rounded-xl flex items-center justify-center border border-border">
+            <iconify-icon icon="solar:gamepad-bold-duotone" class="text-lg text-accent"></iconify-icon>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-bold text-sm truncate">${o.console} — ${o.client}</p>
+            <p class="text-muted-foreground text-xs font-medium">${o.from} – ${o.to} · ${o.total.toLocaleString()} ₸</p>
+          </div>
+          <span class="w-2 h-2 rounded-full flex-shrink-0 ${o.status==='active'?'bg-green-500':o.status==='pending'?'bg-orange-400':'bg-muted-foreground'}"></span>
+        </div>`).join('');
+    }
+
+    // ─── ADMIN TABS ─────────────────────────────────
+    function adminTab(tab) {
+      ['dashboard','consoles','orders','clients'].forEach(t => {
+        document.getElementById('aview-' + t).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('atab-' + t);
+        if (btn) btn.className = 'atab-btn px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap ' +
+          (t === tab ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground');
+      });
+      if (tab==='consoles') renderAdminConsoles();
+      if (tab==='orders') renderAdminOrders();
+      if (tab==='clients') renderAdminClients();
+      if (tab==='dashboard') renderAdminDashboard();
+    }
+
+    // ─── ADMIN CONSOLES ─────────────────────────────
+    function renderAdminConsoles() {
+      const el = document.getElementById('admin-console-list');
+      el.innerHTML = consoles.map(c => `
+        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm">
+          <div class="flex justify-between items-start mb-4">
+            <span class="${c.status==='available'?'bg-green-100 text-green-700':'bg-muted text-muted-foreground'} px-3 py-1 rounded-full text-xs font-bold">
+              ${c.status==='available'?'ҚОЛЖЕТІМДІ':'ҚОЛЖЕТІМСІЗ'}
+            </span>
+            <div class="flex gap-2">
+              <button onclick="adminOpenEdit(${c.id})" class="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
+                <iconify-icon icon="solar:pen-bold" class="text-base"></iconify-icon>
+              </button>
+              <button onclick="adminDeleteConsole(${c.id})" class="w-9 h-9 rounded-full bg-destructive/10 flex items-center justify-center">
+                <iconify-icon icon="solar:trash-bin-trash-bold" class="text-base text-destructive"></iconify-icon>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center flex-shrink-0">
+              ${c.img
+                ? `<img src="${c.img}" class="w-12 object-contain" />`
+                : `<iconify-icon icon="${catIcons[c.cat]||'solar:gamepad-bold'}" class="text-3xl text-accent"></iconify-icon>`}
+            </div>
+            <div class="flex-1">
+              <h2 class="text-lg font-bold">${c.name}</h2>
+              <p class="text-muted-foreground text-sm font-medium">${c.desc}</p>
+            </div>
+          </div>
+          <div class="flex justify-between items-center border-t border-border pt-4">
+            <div>
+              <span class="text-xl font-extrabold">${c.price.toLocaleString()} ₸</span>
+              <span class="text-muted-foreground text-xs font-medium ml-1">/ тәулік</span>
+            </div>
+            <span class="text-xs font-bold text-muted-foreground bg-secondary px-3 py-1 rounded-full">${c.rentals} жалға алу</span>
+          </div>
+        </div>`).join('');
+    }
+
+    function adminAddConsole() {
+      if (!isOwner()) { showToast('Тек арендодатель құрылғы қоса алады.'); return; }
+      const name = document.getElementById('nc-name').value.trim();
+      const price = parseInt(document.getElementById('nc-price').value);
+      const cat = document.getElementById('nc-cat').value;
+      const desc = document.getElementById('nc-desc').value.trim();
+      if (!name || !price) { showToast('Өрістерді толтырыңыз!'); return; }
+      nextConsoleId++;
+      consoles.push({ id:nextConsoleId, name, cat, desc:desc||cat, price, status:'available', rentals:0, img:null });
+      closeModal('modal-add-console');
+      renderAdminConsoles(); renderCatalog(); renderAdminDashboard();
+      ['nc-name','nc-price','nc-desc'].forEach(id => document.getElementById(id).value='');
+      saveState();
+      showToast('Консоль сәтті қосылды!');
+    }
+
+    function adminOpenEdit(id) {
+      const c = consoles.find(x=>x.id===id);
+      document.getElementById('ec-id').value = id;
+      document.getElementById('ec-name').value = c.name;
+      document.getElementById('ec-price').value = c.price;
+      document.getElementById('ec-status').value = c.status;
+      openModal('modal-edit-console');
+    }
+    function adminSaveEdit() {
+      const id = parseInt(document.getElementById('ec-id').value);
+      const c = consoles.find(x=>x.id===id);
+      c.name = document.getElementById('ec-name').value;
+      c.price = parseInt(document.getElementById('ec-price').value);
+      c.status = document.getElementById('ec-status').value;
+      closeModal('modal-edit-console');
+      renderAdminConsoles(); renderCatalog(); renderAdminDashboard();
+      saveState();
+      showToast('Өзгерістер сақталды!');
+    }
+    function adminDeleteConsole(id) {
+      consoles = consoles.filter(c=>c.id!==id);
+      renderAdminConsoles(); renderCatalog(); renderAdminDashboard();
+      saveState();
+      showToast('Консоль жойылды.');
+    }
+
+    // ─── ADMIN ORDERS ────────────────────────────────
+    const orderStatusCfg = {
+      active: {label:'БЕЛСЕНДІ', bg:'bg-green-100 text-green-700'},
+      pending:{label:'КҮТУ',     bg:'bg-orange-100 text-orange-600'},
+      done:   {label:'АЯҚТАЛДЫ',bg:'bg-muted text-muted-foreground'}
+    };
+
+    function adminOrderFilter(f) {
+      adminOrderFilter_ = f;
+      ['all','active','pending','done'].forEach(k => {
+        const btn = document.getElementById('aof-' + k);
+        if (btn) btn.className = 'aof-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap ' +
+          (k===f ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground');
+      });
+      renderAdminOrders();
+    }
+
+    function renderAdminOrders() {
+      const filtered = adminOrderFilter_==='all' ? adminOrders : adminOrders.filter(o=>o.status===adminOrderFilter_);
+      const el = document.getElementById('admin-orders-list');
+      if (!filtered.length) { el.innerHTML = `<div class="text-center py-12 text-muted-foreground font-medium text-sm">Тапсырыстар жоқ</div>`; return; }
+      el.innerHTML = filtered.map(o => {
+        const sc = orderStatusCfg[o.status];
+        return `
+        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm">
+          <div class="flex justify-between items-start mb-3">
+            <span class="${sc.bg} px-3 py-1 rounded-full text-xs font-bold">${sc.label}</span>
+            <span class="font-extrabold text-sm">${o.total.toLocaleString()} ₸</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
+              <iconify-icon icon="solar:user-bold" class="text-base text-muted-foreground"></iconify-icon>
+            </div>
+            <div>
+              <p class="font-bold text-sm">${o.client}</p>
+              <p class="text-muted-foreground text-xs font-medium">${o.phone}</p>
+            </div>
+          </div>
+          <div class="border-t border-border pt-3 flex justify-between items-center">
+            <div><p class="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Консоль</p><p class="font-bold text-sm">${o.console}</p></div>
+            <div class="text-right"><p class="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Мерзімі</p><p class="font-bold text-sm">${o.from} – ${o.to}</p></div>
+          </div>
+          ${o.status==='pending'?`
+          <div class="flex gap-2 mt-4">
+            <button onclick="adminUpdateOrder(${o.id},'active')" class="flex-1 h-11 rounded-full bg-primary text-primary-foreground font-bold text-xs">Растау</button>
+            <button onclick="adminUpdateOrder(${o.id},'done')" class="flex-1 h-11 rounded-full bg-secondary text-secondary-foreground font-bold text-xs">Аяқтау</button>
+          </div>`:''}
+          ${o.status==='active'?`
+          <button onclick="adminUpdateOrder(${o.id},'done')" class="w-full mt-4 h-11 rounded-full bg-secondary text-secondary-foreground font-bold text-xs">Аяқталды деп белгілеу</button>`:''}
+        </div>`;
+      }).join('');
+    }
+
+    function adminUpdateOrder(id, status) {
+      const o = adminOrders.find(x=>x.id===id);
+      if (o) o.status = status;
+      renderAdminOrders(); renderAdminDashboard();
+      saveState();
+      showToast(status==='active' ? 'Тапсырыс расталды!' : 'Тапсырыс аяқталды!');
+    }
+
+    // ─── ADMIN CLIENTS ───────────────────────────────
+    function renderAdminClients() {
+      const q = (document.getElementById('admin-client-search')?.value||'').toLowerCase();
+      const filtered = adminClients.filter(c=>c.name.toLowerCase().includes(q)||c.phone.includes(q));
+      const el = document.getElementById('admin-clients-list');
+      if (!filtered.length) { el.innerHTML = `<div class="text-center py-12 text-muted-foreground font-medium text-sm">Клиент табылмады</div>`; return; }
+      el.innerHTML = filtered.map(c=>`
+        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0">
+            <span class="text-primary-foreground font-extrabold text-lg">${c.name.charAt(0)}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-bold text-base truncate">${c.name}</p>
+            <p class="text-muted-foreground text-xs font-medium">${c.phone}</p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="font-extrabold text-sm">${c.spent.toLocaleString()} ₸</p>
+            <p class="text-muted-foreground text-xs font-medium">${c.orders} тапсырыс</p>
+          </div>
+        </div>`).join('');
+    }
+
+    // ─── MODALS ──────────────────────────────────────
+    function openModal(id) {
+      const m = document.getElementById(id);
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+    document.querySelectorAll('[id^="modal-"]').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+    });
+
+    // ─── TOAST ───────────────────────────────────────
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(()=>t.classList.add('hidden'), 2500);
+    }
+
+    // ─── INIT ────────────────────────────────────────
+    function initIconFallbacks() {
+      const hasIconify = window.customElements && customElements.get('iconify-icon');
+      if (hasIconify) return;
+      const fallbackByName = {
+        gamepad: '▣',
+        bell: '!',
+        magnifer: '⌕',
+        tuning: '≡',
+        home: '⌂',
+        calendar: '□',
+        user: '●',
+        arrow: '‹',
+        check: '✓',
+        google: 'G',
+        shield: '◆',
+        money: '₸',
+        box: '▤',
+        add: '+',
+        list: '☑',
+        users: '●●',
+        heart: '♡',
+        settings: '⚙',
+        pen: '✎',
+        trash: '×',
+        vr: 'VR'
+      };
+      document.querySelectorAll('iconify-icon').forEach(icon => {
+        const name = icon.getAttribute('icon') || '';
+        const key = Object.keys(fallbackByName).find(k => name.includes(k));
+        icon.textContent = fallbackByName[key] || '•';
+        icon.classList.add('icon-fallback');
+      });
+    }
+
+    loadState();
+    setAuthRole('renter');
+    renderCatalog();
+    if (currentUser) {
+      goTo(currentUser.role === 'owner' ? 'admin' : 'home');
+    }
+    window.addEventListener('load', () => setTimeout(initIconFallbacks, 1200));
+    </script>
+</body>
+</html>
