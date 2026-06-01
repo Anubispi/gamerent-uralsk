@@ -1,1406 +1,2089 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GameRent — Орал</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
-    <style type="text/tailwindcss">
-        @theme inline {
-            --color-background: var(--background);
-            --color-foreground: var(--foreground);
-            --color-primary: var(--primary);
-            --color-primary-foreground: var(--primary-foreground);
-            --color-secondary: var(--secondary);
-            --color-secondary-foreground: var(--secondary-foreground);
-            --color-muted: var(--muted);
-            --color-muted-foreground: var(--muted-foreground);
-            --color-accent: var(--accent);
-            --color-accent-foreground: var(--accent-foreground);
-            --color-destructive: var(--destructive);
-            --color-card: var(--card);
-            --color-card-foreground: var(--card-foreground);
-            --color-border: var(--border);
-            --color-input: var(--input);
-            --color-ring: var(--ring);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameRent Uralsk</title>
+  <meta name="description" content="Аренда игровых консолей в Уральске. Бронирование, доставка и кабинет владельца работают прямо в браузере." />
+  <style>
+    :root {
+      --bg: #081019;
+      --bg-soft: #101a28;
+      --panel: rgba(12, 20, 32, 0.78);
+      --panel-solid: #111b2a;
+      --line: rgba(255, 255, 255, 0.09);
+      --text: #f4f7fb;
+      --muted: #9bacc3;
+      --muted-2: #6f8096;
+      --accent: #6ee7ff;
+      --accent-2: #8b5cf6;
+      --success: #58d68d;
+      --warning: #ffb84d;
+      --danger: #ff6b6b;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --maxw: 1180px;
+      --font-head: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      --font-body: "Segoe UI", system-ui, sans-serif;
+    }
 
-        @theme {
-            --radius-xs: calc(var(--radius) - 8px);
-            --radius-sm: calc(var(--radius) - 4px);
-            --radius-md: calc(var(--radius) - 2px);
-            --radius-lg: var(--radius);
-            --radius-xl: calc(var(--radius) + 4px);
-            --radius-2xl: calc(var(--radius) + 8px);
-            --radius-3xl: calc(var(--radius) + 16px);
-            --radius-4xl: calc(var(--radius) + 24px);
-        }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(110, 231, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(139, 92, 246, 0.16), transparent 24%),
+        linear-gradient(180deg, #06101a 0%, #08111a 42%, #050b12 100%);
+      overflow-x: hidden;
+    }
 
-        * {
-            corner-shape: var(--shape, round);
-        }
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
 
-        .rounded-full, .rounded-none,
-        .rounded-t-full, .rounded-b-full,
-        .rounded-l-full, .rounded-r-full {
-            corner-shape: round;
-        }
+    body::before {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.7), transparent 92%);
+      opacity: 0.45;
+    }
 
-        @utility rounded-* {
-            border-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-        }
+    body::after {
+      background:
+        radial-gradient(circle at 18% 22%, rgba(110, 231, 255, 0.12), transparent 0 140px),
+        radial-gradient(circle at 82% 18%, rgba(139, 92, 246, 0.11), transparent 0 160px),
+        radial-gradient(circle at 70% 82%, rgba(88, 214, 141, 0.08), transparent 0 130px);
+      filter: blur(8px);
+    }
 
-        @utility rounded-t-* {
-            border-top-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-            border-top-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-        }
+    a { color: inherit; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    button {
+      border: 0;
+      cursor: pointer;
+    }
 
-        @utility rounded-b-* {
-            border-bottom-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-            border-bottom-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-        }
+    .app {
+      width: min(var(--maxw), calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 18px 0 28px;
+    }
 
-        @utility rounded-tl-* {
-            border-top-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-        }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      margin: 0 -16px 18px;
+      padding: 14px 16px 16px;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(180deg, rgba(5, 11, 18, 0.88), rgba(5, 11, 18, 0.46));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
 
-        @utility rounded-tr-* {
-            border-top-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-        }
+    .topbar-inner {
+      width: min(var(--maxw), calc(100vw - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-        @utility rounded-bl-* {
-            border-bottom-left-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
 
-        @utility rounded-br-* {
-            border-bottom-right-radius: calc(--value(--radius-*, [length], [percentage]) * var(--shape-multiplier, 1));
-        }
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(145deg, rgba(110, 231, 255, 0.22), rgba(139, 92, 246, 0.18));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      font-size: 24px;
+    }
 
-        :root {
-            --shape: squircle;
-            --shape-multiplier: 1;
-            --background: #F9F9FB;
-            --foreground: #0F1014;
-            --primary: #0F1014;
-            --primary-foreground: #FFFFFF;
-            --secondary: #F2F2F5;
-            --secondary-foreground: #0F1014;
-            --muted: #E5E5EA;
-            --muted-foreground: #73737A;
-            --accent: #0055FF;
-            --accent-foreground: #FFFFFF;
-            --destructive: #E63946;
-            --card: #FFFFFF;
-            --card-foreground: #0F1014;
-            --border: #E5E5EA;
-            --input: #F2F2F5;
-            --ring: #0055FF;
-            --font-sans: "DM Sans";
-            --font-heading: "DM Sans";
-            --font-serif: "Playfair Display";
-            --font-mono: "JetBrains Mono";
-            --radius: 1.5rem;
-        }
+    .brand h1 {
+      margin: 0;
+      font-family: var(--font-head);
+      letter-spacing: 0.02em;
+      font-size: 1rem;
+      line-height: 1.1;
+    }
 
-        @supports (corner-shape: squircle) {
-            :root {
-                --shape-multiplier: 2.5;
-            }
-        }
+    .brand p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
 
-        iconify-icon:not([width]):not([height]) {
-            display: inline-block;
-            width: 1em;
-            height: 1em;
-        }
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      white-space: nowrap;
+    }
 
-        iconify-icon.icon-fallback {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-sans), sans-serif;
-            font-weight: 800;
-            line-height: 1;
-        }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(88,214,141,0.15);
+    }
 
-        *, *::before, *::after {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
+    .screen { display: none; animation: fadeUp 220ms ease-out; }
+    .screen.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-            *::-webkit-scrollbar {
-                display: none;
-            }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: stretch;
+    }
 
-        /* Screen transitions */
-        .screen {
-            display: none;
-            min-height: 100dvh;
-        }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
 
-            .screen.active {
-                display: block;
-            }
+    .panel.pad { padding: 22px; }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(24px);
-            }
+    .hero-main {
+      position: relative;
+      overflow: hidden;
+      min-height: 460px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
 
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(110,231,255,0.16), transparent 70%);
+      filter: blur(6px);
+      pointer-events: none;
+    }
 
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-24px);
-            }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--accent);
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      width: fit-content;
+    }
 
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
+    .hero h2,
+    .section-title {
+      margin: 0;
+      font-family: var(--font-head);
+      letter-spacing: 0.01em;
+    }
 
-        .screen.active {
-            animation: slideIn 0.22s cubic-bezier(.4,0,.2,1);
-        }
+    .hero h2 {
+      max-width: 13ch;
+      font-size: clamp(2.6rem, 6vw, 4.8rem);
+      line-height: 0.95;
+      margin-top: 14px;
+    }
 
-        .screen.slide-left {
-            animation: slideInLeft 0.22s cubic-bezier(.4,0,.2,1);
-        }
-    </style>
+    .hero-copy {
+      margin: 16px 0 0;
+      max-width: 58ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 18px;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 34px rgba(110, 231, 255, 0.14);
+      transition: transform 160ms ease, filter 160ms ease;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .btn.secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: none;
+      color: var(--text);
+    }
+    .btn.danger {
+      background: linear-gradient(135deg, #ff6b6b, #ff8b5c);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .stat strong {
+      display: block;
+      font-size: 1.18rem;
+      margin-bottom: 4px;
+    }
+    .stat span {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 18px;
+    }
+
+    .side-card {
+      padding: 20px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .side-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+    .side-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .pulse-grid {
+      position: absolute;
+      inset: auto -10px 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 14px);
+      gap: 10px;
+      opacity: 0.65;
+      transform: rotate(12deg);
+    }
+    .pulse-grid i {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, rgba(110,231,255,0.75), rgba(139,92,246,0.7));
+      box-shadow: 0 0 24px rgba(110,231,255,0.25);
+      animation: float 2.6s ease-in-out infinite;
+    }
+    .pulse-grid i:nth-child(2n) { animation-delay: 0.35s; }
+    .pulse-grid i:nth-child(3n) { animation-delay: 0.7s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); opacity: 0.72; }
+      50% { transform: translateY(-8px); opacity: 1; }
+    }
+
+    .search-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 18px 0 12px;
+    }
+
+    .field,
+    .input {
+      width: 100%;
+      min-height: 50px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      outline: none;
+      padding: 0 14px;
+    }
+    .input::placeholder { color: var(--muted-2); }
+    .field:focus,
+    .input:focus,
+    textarea:focus {
+      border-color: rgba(110,231,255,0.45);
+      box-shadow: 0 0 0 4px rgba(110,231,255,0.08);
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 8px 0 18px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--muted);
+      transition: 160ms ease;
+    }
+    .chip.active {
+      background: linear-gradient(135deg, rgba(110,231,255,0.18), rgba(139,92,246,0.18));
+      color: var(--text);
+      border-color: rgba(110,231,255,0.22);
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+      margin: 20px 0 14px;
+    }
+    .section-title {
+      font-size: 1.35rem;
+    }
+    .section-subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .catalog {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.14);
+    }
+
+    .console-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 100%;
+    }
+
+    .console-top {
+      display: flex;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .icon-box {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 1.7rem;
+      background: linear-gradient(135deg, rgba(110,231,255,0.14), rgba(139,92,246,0.12));
+      border: 1px solid rgba(255,255,255,0.08);
+      flex: 0 0 auto;
+    }
+
+    .console-card h4 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 0.82rem;
+      width: fit-content;
+    }
+
+    .price {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: auto;
+    }
+    .price strong {
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+    .price span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .toolbar .left,
+    .toolbar .right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav {
+      position: sticky;
+      bottom: 14px;
+      z-index: 25;
+      width: min(var(--maxw), calc(100vw - 32px));
+      margin: 22px auto 0;
+      padding: 12px;
+      border-radius: 24px;
+      background: rgba(6, 11, 18, 0.84);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .nav button {
+      min-height: 52px;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: 160ms ease;
+    }
+    .nav button.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+    .nav button span { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em; }
+    .nav button b { font-size: 1rem; line-height: 1; }
+
+    .booking-layout,
+    .auth-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-visual {
+      padding: 20px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top left, rgba(110, 231, 255, 0.16), transparent 42%),
+        radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.18), transparent 38%),
+        rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary-visual::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(88,214,141,0.12), transparent 64%);
+      filter: blur(8px);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .kpi {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .kpi strong {
+      display: block;
+      font-size: 1.08rem;
+      margin-bottom: 4px;
+    }
+    .kpi span {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      outline: none;
+    }
+
+    .table-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-item {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .list-item h4 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+    }
+    .list-item p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.9rem;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: end;
+      margin-top: 12px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .status.pending { color: #ffd166; background: rgba(255, 209, 102, 0.12); }
+    .status.active { color: #58d68d; background: rgba(88, 214, 141, 0.12); }
+    .status.done { color: #9fb3c8; background: rgba(159, 179, 200, 0.12); }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-weight: 700;
+    }
+    .tab.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(110,231,255,0.24);
+    }
+
+    .hidden { display: none !important; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(680px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      padding: 22px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(15, 23, 36, 0.98), rgba(10, 16, 25, 0.98));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 86px;
+      z-index: 80;
+      min-width: 260px;
+      max-width: min(92vw, 420px);
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(15, 23, 36, 0.96);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      display: none;
+    }
+    .toast.show { display: block; animation: fadeUp 220ms ease-out; }
+    .toast small { color: var(--muted); display: block; margin-top: 2px; }
+
+    footer {
+      margin: 24px 0 8px;
+      color: var(--muted-2);
+      text-align: center;
+      font-size: 0.86rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .booking-layout,
+      .auth-layout {
+        grid-template-columns: 1fr;
+      }
+      .stats,
+      .catalog {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .topbar-inner {
+        align-items: start;
+        flex-direction: column;
+      }
+      .brand {
+        width: 100%;
+      }
+      .status-chip {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app { width: min(100vw - 20px, var(--maxw)); }
+      .hero-main { padding: 20px; min-height: auto; }
+      .hero h2 { font-size: clamp(2.1rem, 14vw, 3.4rem); max-width: 10ch; }
+      .stats,
+      .catalog,
+      .kpi-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .section-head,
+      .toolbar {
+        align-items: start;
+        flex-direction: column;
+      }
+      .nav {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        padding: 10px;
+      }
+      .nav button {
+        min-height: 50px;
+      }
+      .list-item {
+        flex-direction: column;
+      }
+      .order-actions {
+        justify-content: start;
+      }
+    }
+  </style>
 </head>
-<body class="bg-background text-foreground font-sans">
-
-    <!-- ══════════════════════════════════════════
-         SCREEN 1: AUTH
-    ══════════════════════════════════════════ -->
-    <div id="screen-auth" class="screen active">
-        <div class="min-h-screen bg-background flex flex-col px-6 py-12">
-            <div class="flex-1 flex flex-col justify-center items-center text-center">
-                <div class="w-24 h-24 bg-primary rounded-[2rem] flex items-center justify-center mb-8 shadow-2xl shadow-primary/20">
-                    <iconify-icon icon="solar:gamepad-bold" class="text-5xl text-primary-foreground"></iconify-icon>
-                </div>
-                <h1 class="text-3xl font-extrabold mb-3">Қош келдіңіз!</h1>
-                <p class="text-muted-foreground font-medium mb-12 max-w-[280px]">Оралдағы ең үздік ойын консольдері сізді күтуде</p>
-                <div class="w-full space-y-4">
-                    <div class="space-y-2 text-left">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-4">Атыңыз</label>
-                        <div class="bg-input rounded-full h-16 flex items-center px-6 gap-3 border border-transparent focus-within:border-primary/20 transition-all">
-                            <iconify-icon icon="solar:user-bold" class="text-xl text-muted-foreground"></iconify-icon>
-                            <input id="auth-name" type="text" placeholder="Атыңызды жазыңыз"
-                                   class="bg-transparent border-none outline-none text-base w-full font-bold" />
-                        </div>
-                    </div>
-                    <div class="space-y-2 text-left">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-4">Телефон нөмірі</label>
-                        <div class="bg-input rounded-full h-16 flex items-center px-6 gap-3 border border-transparent focus-within:border-primary/20 transition-all">
-                            <span class="font-bold text-foreground">+7</span>
-                            <input id="auth-phone" type="tel" placeholder="707 000 00 00"
-                                   class="bg-transparent border-none outline-none text-base w-full font-bold tracking-wider" />
-                        </div>
-                    </div>
-                    <div class="space-y-2 text-left">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-4">Аккаунт түрі</label>
-                        <div class="flex gap-2 p-1 bg-secondary rounded-full">
-                            <button id="role-renter" onclick="setAuthRole('renter')" class="flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm">Арендатор</button>
-                            <button id="role-owner" onclick="setAuthRole('owner')" class="flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm">Арендодатель</button>
-                        </div>
-                    </div>
-                    <button onclick="authSubmit()"
-                            class="w-full bg-primary text-primary-foreground h-16 rounded-full font-bold text-base shadow-lg shadow-primary/10 active:scale-[0.98] transition-all">
-                        Аккаунт ашу / кіру
-                    </button>
-                    <div class="relative py-4">
-                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-border"></div></div>
-                        <div class="relative flex justify-center text-xs uppercase">
-                            <span class="bg-background px-4 text-muted-foreground font-bold tracking-widest">деректер сақталады</span>
-                        </div>
-                    </div>
-                    <button onclick="quickDemoAccount()"
-                            class="w-full bg-card border border-border text-foreground h-16 rounded-full font-bold text-base flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
-                        <iconify-icon icon="solar:login-2-bold" class="text-xl"></iconify-icon>Жылдам тест аккаунт
-                    </button>
-                </div>
-            </div>
-            <div class="mt-auto pt-8 text-center">
-                <p class="text-[11px] text-muted-foreground leading-relaxed px-4 font-medium">
-                    Тіркелу арқылы сіз біздің
-                    <a href="#" class="text-primary font-bold underline">Пайдалану шарттарымызбен</a> және
-                    <a href="#" class="text-primary font-bold underline">Құпиялылық саясатымызбен</a> келісесіз.
-                </p>
-            </div>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" role="banner" aria-label="GameRent Uralsk">
+        <div class="logo" aria-hidden="true">🎮</div>
+        <div>
+          <h1>GameRent Uralsk</h1>
+          <p>Аренда консолей, бронирование и кабинет владельца</p>
         </div>
+      </div>
+      <div class="status-chip" id="header-status">
+        <span class="status-dot"></span>
+        <span id="header-status-text">Сайт готов к работе</span>
+      </div>
     </div>
+  </header>
 
-    <!-- ══════════════════════════════════════════
-         SCREEN 2: HOME (Catalog)
-    ══════════════════════════════════════════ -->
-    <div id="screen-home" class="screen">
-        <div class="min-h-screen bg-background text-foreground pb-28">
-            <header class="px-5 pt-12 pb-4 bg-background sticky top-0 z-10">
-                <div class="flex justify-between items-center mb-5">
-                    <div>
-                        <h1 class="text-2xl font-extrabold tracking-tight">Каталог</h1>
-                        <p class="text-muted-foreground text-sm font-medium mt-1">Орал қ. бойынша жалға алу</p>
-                    </div>
-                    <button class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                        <iconify-icon icon="solar:bell-bing-bold" class="text-xl"></iconify-icon>
-                    </button>
-                </div>
-                <div class="flex gap-3 items-center">
-                    <div class="flex-1 bg-input rounded-full h-12 flex items-center px-4 gap-3">
-                        <iconify-icon icon="solar:magnifer-linear" class="text-muted-foreground text-xl"></iconify-icon>
-                        <input type="text" id="home-search" oninput="filterCatalog()" placeholder="Консоль немесе ойын іздеу..."
-                               class="bg-transparent border-none outline-none text-sm w-full placeholder-muted-foreground font-medium" />
-                    </div>
-                    <button class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground flex-shrink-0">
-                        <iconify-icon icon="solar:tuning-square-2-bold" class="text-xl"></iconify-icon>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Category filter -->
-            <div class="px-5 mb-6 overflow-x-auto">
-                <div class="flex gap-2 w-max">
-                    <button onclick="setCat('all')" id="cat-all" class="cat-btn px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-bold">Барлығы</button>
-                    <button onclick="setCat('PlayStation')" id="cat-PlayStation" class="cat-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold">PlayStation</button>
-                    <button onclick="setCat('Xbox')" id="cat-Xbox" class="cat-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold">Xbox</button>
-                    <button onclick="setCat('VR')" id="cat-VR" class="cat-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold">VR</button>
-                </div>
+  <main class="app">
+    <section id="screen-auth" class="screen active">
+      <div class="auth-layout">
+        <div class="panel hero-main">
+          <div>
+            <div class="eyebrow">Уральск · живая аренда без фейка</div>
+            <h2>Консоли, которые можно реально забронировать.</h2>
+            <p class="hero-copy">
+              Этот сайт работает как полноценный одностраничный сервис: каталог, поиск, бронирование,
+              история заказов, кабинет владельца и управление складами сохраняются прямо в браузере.
+              Никаких ложных экранов-пустышек и внешних зависимостей.
+            </p>
+            <div class="hero-actions">
+              <button class="btn" id="go-login-btn" type="button">Начать работу</button>
+              <button class="btn secondary" type="button" id="go-catalog-preview-btn">Посмотреть каталог</button>
             </div>
-
-            <main id="catalog-list" class="px-5 flex flex-col gap-5"></main>
-
-            <!-- Bottom nav -->
-            <nav class="fixed bottom-6 left-5 right-5 bg-card/90 backdrop-blur-xl border border-border rounded-full flex justify-between items-center px-6 py-4 shadow-lg z-20">
-                <button class="flex flex-col items-center gap-1 text-primary">
-                    <iconify-icon icon="solar:home-smile-bold" class="text-2xl"></iconify-icon>
-                    <span class="text-[10px] font-bold">Басты бет</span>
-                </button>
-                <button onclick="goTo('bookings-list')" class="flex flex-col items-center gap-1 text-muted-foreground">
-                    <iconify-icon icon="solar:calendar-bold" class="text-2xl"></iconify-icon>
-                    <span class="text-[10px] font-bold">Брондаулар</span>
-                </button>
-                <button onclick="goTo('profile')" class="flex flex-col items-center gap-1 text-muted-foreground">
-                    <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
-                    <span class="text-[10px] font-bold">Профиль</span>
-                </button>
-            </nav>
+            <div class="stats" id="hero-stats"></div>
+          </div>
+          <div class="summary-visual">
+            <div>
+              <div class="badge">Проверка в браузере</div>
+              <h3 style="margin: 14px 0 8px; font-size: 1.5rem;">Всё хранится локально</h3>
+              <p style="margin: 0; color: var(--muted); line-height: 1.65;">
+                Данные о пользователях, бронях и товарах пишутся в `localStorage`, поэтому сайт не теряет
+                состояние после обновления страницы.
+              </p>
+            </div>
+            <div class="pulse-grid" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
         </div>
-    </div>
 
-    <!-- ══════════════════════════════════════════
-         SCREEN 3: BOOKING
-    ══════════════════════════════════════════ -->
-    <div id="screen-booking" class="screen">
-        <div class="min-h-screen bg-background text-foreground pb-32">
-            <header class="px-5 pt-12 pb-6 flex items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md z-10">
-                <button onclick="goBack()" class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
-                    <iconify-icon icon="solar:alt-arrow-left-linear" class="text-2xl"></iconify-icon>
-                </button>
-                <h1 class="text-xl font-extrabold">Брондауды рәсімдеу</h1>
-            </header>
-            <main class="px-5 space-y-8">
-                <!-- Selected console card -->
-                <div class="bg-card rounded-[1.5rem] p-4 flex items-center gap-4 border border-border shadow-sm">
-                    <div id="booking-img-wrap" class="w-20 h-20 bg-secondary rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <iconify-icon id="booking-icon" icon="solar:gamepad-bold-duotone" class="text-4xl text-accent"></iconify-icon>
-                    </div>
-                    <div>
-                        <h2 id="booking-name" class="font-bold text-lg">—</h2>
-                        <p id="booking-price-label" class="text-accent font-bold text-sm">— ₸ <span class="text-muted-foreground font-medium text-xs">/ тәулік</span></p>
-                    </div>
-                </div>
+        <div class="panel pad">
+          <div class="section-head" style="margin-top: 0;">
+            <div>
+              <h3 class="section-title">Вход в систему</h3>
+              <p class="section-subtitle">Здесь создаётся профиль клиента или владельца.</p>
+            </div>
+          </div>
 
-                <!-- Calendar -->
-                <div class="space-y-4">
-                    <h3 class="font-bold text-base px-2">Күндерді таңдаңыз</h3>
-                    <div class="bg-card rounded-[1.5rem] p-5 border border-border">
-                        <div class="flex justify-between items-center mb-6">
-                            <span id="cal-month-label" class="font-bold">—</span>
-                            <div class="flex gap-2">
-                                <button onclick="calPrev()" class="p-2 bg-secondary rounded-full"><iconify-icon icon="solar:alt-arrow-left-linear"></iconify-icon></button>
-                                <button onclick="calNext()" class="p-2 bg-secondary rounded-full"><iconify-icon icon="solar:alt-arrow-right-linear"></iconify-icon></button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-7 gap-y-3 text-center text-[10px] font-bold text-muted-foreground uppercase mb-1">
-                            <span>Дүй</span><span>Сей</span><span>Сәр</span><span>Бей</span><span>Жұм</span><span>Сен</span><span>Жек</span>
-                        </div>
-                        <div id="cal-grid" class="grid grid-cols-7 gap-y-1 text-center"></div>
-                    </div>
-                </div>
-
-                <!-- Delivery -->
-                <div class="space-y-4">
-                    <h3 class="font-bold text-base px-2">Жеткізу мәліметтері</h3>
-                    <div class="bg-card rounded-[1.5rem] p-5 border border-border space-y-4">
-                        <div class="flex gap-2 p-1 bg-secondary rounded-full">
-                            <button id="del-btn" onclick="setDelivery(true)" class="flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm">Жеткізу</button>
-                            <button id="pickup-btn" onclick="setDelivery(false)" class="flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm">Өзі алып кету</button>
-                        </div>
-                        <div id="address-wrap" class="space-y-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Мекенжай (Орал қ.)</label>
-                            <input type="text" placeholder="Мөлтек аудан, үй, пәтер..."
-                                   class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Байланыс телефоны</label>
-                            <input type="tel" placeholder="+7 707 000 00 00"
-                                   class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Summary -->
-                <div id="booking-summary" class="bg-primary text-primary-foreground rounded-[2rem] p-6 space-y-4">
-                    <div class="flex justify-between items-center text-sm font-medium opacity-80">
-                        <span id="sum-days">Мерзімі: — тәулік</span><span id="sum-sub">— ₸</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm font-medium opacity-80">
-                        <span>Жеткізу:</span><span>Тегін</span>
-                    </div>
-                    <div class="pt-4 border-t border-white/10 flex justify-between items-center">
-                        <span class="font-bold text-lg">Барлығы:</span>
-                        <span id="sum-total" class="text-2xl font-black">— ₸</span>
-                    </div>
-                </div>
-
-                <button onclick="confirmBooking()"
-                        class="w-full bg-accent text-accent-foreground h-16 rounded-full font-bold text-lg shadow-xl shadow-accent/20 active:scale-[0.98] transition-all">
-                    Тапсырысты растау
-                </button>
-            </main>
-        </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         SCREEN 4: BOOKING SUCCESS
-    ══════════════════════════════════════════ -->
-    <div id="screen-booking-success" class="screen">
-        <div class="min-h-screen bg-background flex flex-col items-center justify-center px-6 text-center gap-6">
-            <div class="w-24 h-24 bg-green-100 rounded-[2rem] flex items-center justify-center shadow-xl shadow-green-200">
-                <iconify-icon icon="solar:check-circle-bold" class="text-5xl text-green-600"></iconify-icon>
+          <form id="auth-form" class="stack">
+            <div>
+              <label for="auth-name">Имя</label>
+              <input class="input" id="auth-name" name="name" placeholder="Например, Алихан" autocomplete="name" />
+            </div>
+            <div class="form-grid">
+              <div>
+                <label for="auth-phone">Телефон</label>
+                <input class="input" id="auth-phone" name="phone" placeholder="+7 7XX XXX XX XX" autocomplete="tel" />
+              </div>
+              <div>
+                <label for="auth-role">Тип аккаунта</label>
+                <select class="input" id="auth-role" name="role">
+                  <option value="renter">Клиент</option>
+                  <option value="owner">Владелец</option>
+                </select>
+              </div>
             </div>
             <div>
-                <h1 class="text-2xl font-extrabold mb-2">Тапсырыс расталды!</h1>
-                <p class="text-muted-foreground font-medium max-w-[260px] mx-auto" id="success-msg">Консоль сізге жеткізіледі</p>
+              <label for="auth-note">Комментарий</label>
+              <textarea id="auth-note" placeholder="Необязательно: адрес доставки, пожелания к консоли, время связи."></textarea>
             </div>
-            <div id="success-card" class="w-full bg-card border border-border rounded-[1.5rem] p-5 space-y-3 text-left">
-                <div class="flex justify-between text-sm"><span class="text-muted-foreground font-medium">Консоль</span><span id="sc-name" class="font-bold">—</span></div>
-                <div class="flex justify-between text-sm"><span class="text-muted-foreground font-medium">Мерзімі</span><span id="sc-dates" class="font-bold">—</span></div>
-                <div class="flex justify-between text-sm"><span class="text-muted-foreground font-medium">Сома</span><span id="sc-total" class="font-bold text-accent">—</span></div>
+            <div class="hero-actions" style="margin-top: 6px;">
+              <button class="btn" type="submit">Войти и продолжить</button>
+              <button class="btn secondary" type="button" id="auth-reset-btn">Очистить форму</button>
             </div>
-            <button onclick="goTo('bookings-list')"
-                    class="w-full bg-primary text-primary-foreground h-14 rounded-full font-bold">
-                Брондауларымды көру
-            </button>
-            <button onclick="goTo('home')" class="w-full h-14 rounded-full bg-secondary text-secondary-foreground font-bold">
-                Каталогқа оралу
-            </button>
+            <p style="margin: 0; color: var(--muted); line-height: 1.6; font-size: 0.92rem;">
+              Для владельца доступны добавление, редактирование и закрытие заказов. Для клиента доступны поиск,
+              бронирование и история аренд.
+            </p>
+          </form>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <!-- ══════════════════════════════════════════
-         SCREEN 5: MY BOOKINGS LIST
-    ══════════════════════════════════════════ -->
-    <div id="screen-bookings-list" class="screen">
-        <div class="min-h-screen bg-background pb-28">
-            <header class="px-5 pt-12 pb-6 flex items-center gap-4 sticky top-0 bg-background z-10">
-                <button onclick="goBack()" class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
-                    <iconify-icon icon="solar:alt-arrow-left-linear" class="text-2xl"></iconify-icon>
-                </button>
-                <h1 class="text-xl font-extrabold">Менің брондауларым</h1>
-            </header>
-            <div id="my-bookings-list" class="px-5 space-y-4"></div>
-        </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         SCREEN 6: PROFILE
-    ══════════════════════════════════════════ -->
-    <div id="screen-profile" class="screen">
-        <div class="min-h-screen bg-background pb-28">
-            <header class="px-5 pt-12 pb-6 flex items-center justify-between sticky top-0 bg-background z-10">
-                <h1 class="text-2xl font-extrabold">Профиль</h1>
-                <button id="profile-admin-btn" onclick="goTo('admin')" class="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-full text-xs font-bold">
-                    <iconify-icon icon="solar:shield-keyhole-bold" class="text-sm"></iconify-icon>
-                    Құрылғылар
-                </button>
-            </header>
-            <main class="px-5 space-y-4">
-                <!-- Avatar -->
-                <div class="bg-card border border-border rounded-[1.5rem] p-5 flex items-center gap-4">
-                    <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
-                        <span id="profile-initial" class="text-primary-foreground text-2xl font-extrabold">U</span>
-                    </div>
-                    <div>
-                        <h2 id="profile-name" class="font-extrabold text-lg">—</h2>
-                        <p id="profile-phone" class="text-muted-foreground text-sm font-medium">—</p>
-                        <p id="profile-role" class="text-accent text-xs font-bold mt-1">—</p>
-                    </div>
-                </div>
-                <!-- Stats -->
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-card border border-border rounded-[1.5rem] p-4 text-center">
-                        <p id="profile-orders" class="text-2xl font-extrabold text-accent">0</p>
-                        <p class="text-muted-foreground text-xs font-medium mt-1">Тапсырыс</p>
-                    </div>
-                    <div class="bg-card border border-border rounded-[1.5rem] p-4 text-center">
-                        <p id="profile-spent" class="text-2xl font-extrabold">0 ₸</p>
-                        <p class="text-muted-foreground text-xs font-medium mt-1">Жалпы сома</p>
-                    </div>
-                </div>
-                <!-- Menu -->
-                <div class="bg-card border border-border rounded-[1.5rem] overflow-hidden">
-                    <button onclick="goTo('bookings-list')" class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors border-b border-border">
-                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-                            <iconify-icon icon="solar:calendar-bold" class="text-xl text-accent"></iconify-icon>
-                        </div>
-                        <span class="font-bold text-sm flex-1 text-left">Брондауларым</span>
-                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
-                    </button>
-                    <button id="owner-add-device-btn" onclick="goTo('admin'); adminTab('consoles'); openModal('modal-add-console')" class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors border-b border-border hidden">
-                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-                            <iconify-icon icon="solar:add-circle-bold" class="text-xl text-green-600"></iconify-icon>
-                        </div>
-                        <span class="font-bold text-sm flex-1 text-left">Құрылғы қосу</span>
-                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
-                    </button>
-                    <button class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors border-b border-border">
-                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-                            <iconify-icon icon="solar:heart-bold" class="text-xl text-destructive"></iconify-icon>
-                        </div>
-                        <span class="font-bold text-sm flex-1 text-left">Таңдаулылар</span>
-                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
-                    </button>
-                    <button class="w-full flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors">
-                        <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-                            <iconify-icon icon="solar:settings-bold" class="text-xl text-muted-foreground"></iconify-icon>
-                        </div>
-                        <span class="font-bold text-sm flex-1 text-left">Параметрлер</span>
-                        <iconify-icon icon="solar:alt-arrow-right-linear" class="text-muted-foreground"></iconify-icon>
-                    </button>
-                </div>
-                <button onclick="logout()" class="w-full h-14 rounded-full bg-destructive/10 text-destructive font-bold text-sm">
-                    Шығу
-                </button>
-            </main>
-            <nav class="fixed bottom-6 left-5 right-5 bg-card/90 backdrop-blur-xl border border-border rounded-full flex justify-between items-center px-6 py-4 shadow-lg z-20">
-                <button onclick="goTo('home')" class="flex flex-col items-center gap-1 text-muted-foreground">
-                    <iconify-icon icon="solar:home-smile-bold" class="text-2xl"></iconify-icon>
-                    <span class="text-[10px] font-bold">Басты бет</span>
-                </button>
-                <button onclick="goTo('bookings-list')" class="flex flex-col items-center gap-1 text-muted-foreground">
-                    <iconify-icon icon="solar:calendar-bold" class="text-2xl"></iconify-icon>
-                    <span class="text-[10px] font-bold">Брондаулар</span>
-                </button>
-                <button class="flex flex-col items-center gap-1 text-primary">
-                    <iconify-icon icon="solar:user-bold" class="text-2xl"></iconify-icon>
-                    <span class="text-[10px] font-bold">Профиль</span>
-                </button>
-            </nav>
-        </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         SCREEN 7: ADMIN
-    ══════════════════════════════════════════ -->
-    <div id="screen-admin" class="screen">
-        <div class="min-h-screen bg-background text-foreground pb-28">
-            <header class="px-5 pt-12 pb-4 bg-background sticky top-0 z-20">
-                <div class="flex justify-between items-center mb-5">
-                    <div class="flex items-center gap-3">
-                        <button onclick="goBack()" class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                            <iconify-icon icon="solar:alt-arrow-left-linear" class="text-xl"></iconify-icon>
-                        </button>
-                        <div>
-                            <h1 class="text-2xl font-extrabold tracking-tight">Басқару панелі</h1>
-                            <p class="text-muted-foreground text-sm font-medium mt-0.5">Консоль менеджменті</p>
-                        </div>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-                        <iconify-icon icon="solar:shield-keyhole-bold" class="text-xl"></iconify-icon>
-                    </div>
-                </div>
-                <div class="flex gap-2 overflow-x-auto">
-                    <button onclick="adminTab('dashboard')" id="atab-dashboard" class="atab-btn px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-bold whitespace-nowrap">Дашборд</button>
-                    <button onclick="adminTab('consoles')" id="atab-consoles" class="atab-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold whitespace-nowrap">Консольдер</button>
-                    <button onclick="adminTab('orders')" id="atab-orders" class="atab-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold whitespace-nowrap">Тапсырыстар</button>
-                    <button onclick="adminTab('clients')" id="atab-clients" class="atab-btn px-5 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-bold whitespace-nowrap">Клиенттер</button>
-                </div>
-            </header>
-
-            <main class="px-5 space-y-5">
-
-                <!-- DASHBOARD -->
-                <div id="aview-dashboard">
-                    <div class="grid grid-cols-2 gap-3 mb-5">
-                        <div class="bg-primary text-primary-foreground rounded-[1.5rem] p-4">
-                            <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center mb-3">
-                                <iconify-icon icon="solar:money-bag-bold" class="text-lg"></iconify-icon>
-                            </div>
-                            <p class="text-white/70 text-xs font-medium mb-1">Бүгін табыс</p>
-                            <p class="text-2xl font-extrabold">42 000 ₸</p>
-                        </div>
-                        <div class="bg-card rounded-[1.5rem] p-4 border border-border">
-                            <div class="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center mb-3">
-                                <iconify-icon icon="solar:calendar-bold" class="text-lg text-accent"></iconify-icon>
-                            </div>
-                            <p class="text-muted-foreground text-xs font-medium mb-1">Ай табысы</p>
-                            <p class="text-2xl font-extrabold">840 000 ₸</p>
-                        </div>
-                        <div class="bg-card rounded-[1.5rem] p-4 border border-border">
-                            <div class="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center mb-3">
-                                <iconify-icon icon="solar:gamepad-bold" class="text-lg text-green-600"></iconify-icon>
-                            </div>
-                            <p class="text-muted-foreground text-xs font-medium mb-1">Бос консольдер</p>
-                            <p id="stat-available" class="text-2xl font-extrabold">— / —</p>
-                        </div>
-                        <div class="bg-card rounded-[1.5rem] p-4 border border-border">
-                            <div class="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center mb-3">
-                                <iconify-icon icon="solar:box-bold" class="text-lg text-orange-500"></iconify-icon>
-                            </div>
-                            <p class="text-muted-foreground text-xs font-medium mb-1">Белсенді брон</p>
-                            <p id="stat-active-orders" class="text-2xl font-extrabold">—</p>
-                        </div>
-                    </div>
-                    <div class="bg-card rounded-[1.5rem] p-5 border border-border mb-5">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-base">Соңғы тапсырыстар</h3>
-                            <button onclick="adminTab('orders')" class="text-xs font-bold text-accent bg-accent/10 px-3 py-1 rounded-full">Барлығы</button>
-                        </div>
-                        <div id="admin-recent-orders" class="space-y-3"></div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="adminTab('consoles')" class="bg-card rounded-[1.5rem] p-4 border border-border flex flex-col items-center gap-2 active:scale-95 transition-all">
-                            <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-                                <iconify-icon icon="solar:add-circle-bold" class="text-xl text-accent"></iconify-icon>
-                            </div>
-                            <span class="text-[11px] font-bold text-center leading-tight">Консоль қосу</span>
-                        </button>
-                        <button onclick="adminTab('orders')" class="bg-card rounded-[1.5rem] p-4 border border-border flex flex-col items-center gap-2 active:scale-95 transition-all">
-                            <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-                                <iconify-icon icon="solar:list-check-bold" class="text-xl text-green-600"></iconify-icon>
-                            </div>
-                            <span class="text-[11px] font-bold text-center leading-tight">Брондаулар</span>
-                        </button>
-                        <button onclick="adminTab('clients')" class="bg-card rounded-[1.5rem] p-4 border border-border flex flex-col items-center gap-2 active:scale-95 transition-all">
-                            <div class="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-                                <iconify-icon icon="solar:users-group-rounded-bold" class="text-xl text-orange-500"></iconify-icon>
-                            </div>
-                            <span class="text-[11px] font-bold text-center leading-tight">Клиенттер</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- CONSOLES -->
-                <div id="aview-consoles" class="hidden space-y-4">
-                    <button onclick="openModal('modal-add-console')" class="w-full h-14 rounded-full bg-accent text-accent-foreground font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
-                        <iconify-icon icon="solar:add-circle-bold" class="text-xl"></iconify-icon>Жаңа консоль қосу
-                    </button>
-                    <div id="admin-console-list" class="space-y-4"></div>
-                </div>
-
-                <!-- ORDERS -->
-                <div id="aview-orders" class="hidden space-y-4">
-                    <div class="flex gap-2 overflow-x-auto">
-                        <button onclick="adminOrderFilter('all')" id="aof-all" class="aof-btn px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs font-bold whitespace-nowrap">Барлығы</button>
-                        <button onclick="adminOrderFilter('active')" id="aof-active" class="aof-btn px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-xs font-bold whitespace-nowrap">Белсенді</button>
-                        <button onclick="adminOrderFilter('pending')" id="aof-pending" class="aof-btn px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-xs font-bold whitespace-nowrap">Күту</button>
-                        <button onclick="adminOrderFilter('done')" id="aof-done" class="aof-btn px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-xs font-bold whitespace-nowrap">Аяқталды</button>
-                    </div>
-                    <div id="admin-orders-list" class="space-y-3"></div>
-                </div>
-
-                <!-- CLIENTS -->
-                <div id="aview-clients" class="hidden space-y-4">
-                    <div class="bg-input rounded-full h-12 flex items-center px-4 gap-3">
-                        <iconify-icon icon="solar:magnifer-linear" class="text-muted-foreground text-xl"></iconify-icon>
-                        <input type="text" id="admin-client-search" oninput="renderAdminClients()" placeholder="Клиент іздеу..."
-                               class="bg-transparent border-none outline-none text-sm w-full placeholder-muted-foreground font-medium" />
-                    </div>
-                    <div id="admin-clients-list" class="space-y-3"></div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- ══════════════════ MODALS ══════════════════ -->
-    <!-- Add console -->
-    <div id="modal-add-console" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-end">
-        <div class="w-full bg-card rounded-t-[2rem] p-6 pb-10 space-y-4">
-            <div class="w-12 h-1.5 bg-muted rounded-full mx-auto mb-2"></div>
-            <h2 class="text-xl font-extrabold">Консоль қосу</h2>
-            <div class="space-y-3">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Атауы</label>
-                    <input type="text" id="nc-name" placeholder="PlayStation 5 Pro" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Баға (₸/тәулік)</label>
-                    <input type="number" id="nc-price" placeholder="7000" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Категория</label>
-                    <select id="nc-cat" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none appearance-none">
-                        <option>PlayStation</option>
-                        <option>Xbox</option>
-                        <option>VR</option>
-                    </select>
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Сипаттама</label>
-                    <input type="text" id="nc-desc" placeholder="4K Gaming • 2 Джойстик" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
-                </div>
+    <section id="screen-home" class="screen">
+      <div class="hero" style="margin-top: 10px;">
+        <div class="panel hero-main">
+          <div>
+            <div class="eyebrow">Каталог</div>
+            <h2 style="max-width: 12ch;">Выберите технику и забронируйте слот.</h2>
+            <p class="hero-copy">
+              Каталог умеет искать по названию, фильтровать по категории и сразу открывать экран бронирования.
+            </p>
+            <div class="search-row">
+              <input id="catalog-search" class="input" placeholder="Поиск: PlayStation, Xbox, VR..." />
+              <button class="btn secondary" id="clear-search-btn" type="button">Сбросить</button>
             </div>
-            <div class="flex gap-3 pt-2">
-                <button onclick="closeModal('modal-add-console')" class="flex-1 h-14 rounded-full bg-secondary text-secondary-foreground font-bold text-sm">Болдырмау</button>
-                <button onclick="adminAddConsole()" class="flex-1 h-14 rounded-full bg-primary text-primary-foreground font-bold text-sm">Қосу</button>
-            </div>
+            <div class="chips" id="category-chips"></div>
+          </div>
+          <div class="kpi-grid" id="home-kpis"></div>
         </div>
-    </div>
 
-    <!-- Edit console -->
-    <div id="modal-edit-console" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden items-end">
-        <div class="w-full bg-card rounded-t-[2rem] p-6 pb-10 space-y-4">
-            <div class="w-12 h-1.5 bg-muted rounded-full mx-auto mb-2"></div>
-            <h2 class="text-xl font-extrabold">Консольді өңдеу</h2>
-            <input type="hidden" id="ec-id" />
-            <div class="space-y-3">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Атауы</label>
-                    <input type="text" id="ec-name" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Баға (₸)</label>
-                    <input type="number" id="ec-price" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none" />
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-2">Статус</label>
-                    <select id="ec-status" class="w-full bg-input rounded-2xl h-14 px-4 text-sm font-medium outline-none appearance-none">
-                        <option value="available">Қолжетімді</option>
-                        <option value="unavailable">Қолжетімсіз</option>
-                    </select>
-                </div>
+        <div class="hero-side">
+          <div class="panel side-card">
+            <div>
+              <div class="badge">Сегодня</div>
+              <h3>Быстрый старт без лишних шагов</h3>
+              <p>Откройте карточку консоли, выберите даты, добавьте адрес доставки, и заказ сохранится в истории.</p>
             </div>
-            <div class="flex gap-3 pt-2">
-                <button onclick="closeModal('modal-edit-console')" class="flex-1 h-14 rounded-full bg-secondary text-secondary-foreground font-bold text-sm">Болдырмау</button>
-                <button onclick="adminSaveEdit()" class="flex-1 h-14 rounded-full bg-primary text-primary-foreground font-bold text-sm">Сақтау</button>
+            <div class="hero-actions" style="margin: 0;">
+              <button class="btn" id="go-bookings-btn" type="button">Мои брони</button>
+              <button class="btn secondary" id="go-profile-btn" type="button">Профиль</button>
             </div>
+          </div>
+          <div class="panel side-card">
+            <div>
+              <div class="badge">Статус</div>
+              <h3>Реальная логика вместо муляжа</h3>
+              <p>Заказы, склад и клиенты обновляются настоящими данными внутри сайта, а не статичными заглушками.</p>
+            </div>
+            <div class="pulse-grid" aria-hidden="true" style="inset: auto 12px 12px auto; transform: rotate(0); opacity: 0.45;">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Toast -->
-    <div id="toast" class="fixed top-6 left-5 right-5 bg-primary text-primary-foreground py-4 px-5 rounded-2xl font-bold text-sm z-[99] shadow-xl hidden">
-        <div class="flex items-center gap-3">
-            <iconify-icon icon="solar:check-circle-bold" class="text-xl text-green-300 flex-shrink-0"></iconify-icon>
-            <span id="toast-msg"></span>
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h3 class="section-title">Каталог оборудования</h3>
+            <p class="section-subtitle">Нажмите «Забронировать» на любой карточке, чтобы перейти к оформлению.</p>
+          </div>
+          <div class="badge" id="catalog-count"></div>
         </div>
+        <div class="grid catalog" id="catalog-list"></div>
+      </div>
+    </section>
+
+    <section id="screen-booking" class="screen">
+      <div class="booking-layout">
+        <div class="panel pad">
+          <div class="section-head" style="margin-top: 0;">
+            <div>
+              <h3 class="section-title">Оформление брони</h3>
+              <p class="section-subtitle">Проверьте данные и подтвердите заказ.</p>
+            </div>
+          </div>
+          <div class="summary-visual" style="min-height: 260px; margin-bottom: 16px;">
+            <div>
+              <div class="badge" id="booking-category-badge">Категория</div>
+              <h3 id="booking-title" style="margin: 14px 0 8px; font-size: 1.65rem;">--</h3>
+              <p id="booking-desc" style="margin: 0; color: var(--muted); line-height: 1.65;">--</p>
+            </div>
+            <div class="price">
+              <div>
+                <strong id="booking-price">0 ₸</strong>
+                <span>/ сутки</span>
+              </div>
+              <div class="badge" id="booking-availability">Доступно</div>
+            </div>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi">
+              <strong id="booking-days">1</strong>
+              <span>дней аренды</span>
+            </div>
+            <div class="kpi">
+              <strong id="booking-delivery-fee">0 ₸</strong>
+              <span>доставка по городу</span>
+            </div>
+            <div class="kpi">
+              <strong id="booking-total">0 ₸</strong>
+              <span>итого к оплате</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel pad">
+          <form id="booking-form" class="stack">
+            <div class="form-grid">
+              <div class="full">
+                <label for="booking-console">Консоль</label>
+                <select id="booking-console" class="input"></select>
+              </div>
+              <div>
+                <label for="booking-start">Начало</label>
+                <input id="booking-start" class="input" type="date" />
+              </div>
+              <div>
+                <label for="booking-end">Окончание</label>
+                <input id="booking-end" class="input" type="date" />
+              </div>
+              <div>
+                <label for="booking-delivery">Способ</label>
+                <select id="booking-delivery" class="input">
+                  <option value="pickup">Самовывоз</option>
+                  <option value="delivery">Доставка по Уральску</option>
+                </select>
+              </div>
+              <div>
+                <label for="booking-contact">Контакт</label>
+                <input id="booking-contact" class="input" placeholder="+7 7XX XXX XX XX" />
+              </div>
+              <div class="full">
+                <label for="booking-address">Адрес / комментарий</label>
+                <textarea id="booking-address" placeholder="Укажите адрес доставки или комментарий для самовывоза."></textarea>
+              </div>
+            </div>
+            <div class="hero-actions">
+              <button class="btn" type="submit">Подтвердить бронь</button>
+              <button class="btn secondary" type="button" id="booking-back-btn">Назад в каталог</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-bookings" class="screen">
+      <div class="panel pad">
+        <div class="section-head" style="margin-top: 0;">
+          <div>
+            <h3 class="section-title">Мои брони</h3>
+            <p class="section-subtitle">История заказов хранится в браузере и обновляется после каждой новой аренды.</p>
+          </div>
+          <button class="btn secondary" id="bookings-refresh-btn" type="button">Обновить</button>
+        </div>
+        <div class="toolbar">
+          <div class="left">
+            <button class="tab active" data-booking-filter="all" type="button">Все</button>
+            <button class="tab" data-booking-filter="pending" type="button">Ожидают</button>
+            <button class="tab" data-booking-filter="active" type="button">Активные</button>
+            <button class="tab" data-booking-filter="done" type="button">Закрытые</button>
+          </div>
+          <div class="right">
+            <div class="badge" id="bookings-summary"></div>
+          </div>
+        </div>
+        <div class="table-list" id="bookings-list"></div>
+      </div>
+    </section>
+
+    <section id="screen-profile" class="screen">
+      <div class="booking-layout">
+        <div class="panel pad">
+          <div class="section-head" style="margin-top: 0;">
+            <div>
+              <h3 class="section-title">Профиль</h3>
+              <p class="section-subtitle">Данные пользователя и быстрый доступ к кабинету владельца.</p>
+            </div>
+          </div>
+          <div class="summary-visual">
+            <div>
+              <div class="badge" id="profile-role-badge">Клиент</div>
+              <h3 id="profile-name" style="margin: 14px 0 8px; font-size: 1.65rem;">--</h3>
+              <p id="profile-phone" style="margin: 0; color: var(--muted); line-height: 1.65;">--</p>
+            </div>
+            <div class="hero-actions" style="margin: 0;">
+              <button class="btn secondary" type="button" id="profile-edit-btn">Редактировать профиль</button>
+              <button class="btn danger" type="button" id="signout-btn">Выйти</button>
+            </div>
+          </div>
+          <div class="kpi-grid" id="profile-kpis"></div>
+        </div>
+
+        <div class="panel pad">
+          <div class="section-head" style="margin-top: 0;">
+            <div>
+              <h3 class="section-title">Быстрые действия</h3>
+              <p class="section-subtitle">Все ключевые разделы доступны одним нажатием.</p>
+            </div>
+          </div>
+          <div class="grid" style="gap: 12px;">
+            <button class="btn secondary" type="button" id="profile-home-btn">Перейти в каталог</button>
+            <button class="btn secondary" type="button" id="profile-bookings-btn">Открыть брони</button>
+            <button class="btn secondary" type="button" id="profile-admin-btn">Открыть кабинет владельца</button>
+          </div>
+          <div class="section" style="margin-top: 18px;">
+            <div class="badge">Примечание</div>
+            <p class="section-subtitle" style="margin-top: 10px;">
+              Если вы логинитесь как владелец, система открывает админский раздел сразу после входа.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-admin" class="screen">
+      <div class="panel pad">
+        <div class="section-head" style="margin-top: 0;">
+          <div>
+            <h3 class="section-title">Кабинет владельца</h3>
+            <p class="section-subtitle">Управление складом, заказами и клиентами работает прямо в интерфейсе.</p>
+          </div>
+          <div class="hero-actions" style="margin: 0;">
+            <button class="btn" id="admin-add-btn" type="button">Добавить консоль</button>
+            <button class="btn secondary" id="admin-back-btn" type="button">Назад</button>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab active" data-admin-tab="dashboard" type="button">Обзор</button>
+          <button class="tab" data-admin-tab="inventory" type="button">Склад</button>
+          <button class="tab" data-admin-tab="orders" type="button">Заказы</button>
+          <button class="tab" data-admin-tab="clients" type="button">Клиенты</button>
+        </div>
+
+        <div id="admin-dashboard" class="grid" style="gap: 16px;"></div>
+        <div id="admin-inventory" class="grid hidden" style="gap: 16px;"></div>
+        <div id="admin-orders" class="grid hidden" style="gap: 16px;"></div>
+        <div id="admin-clients" class="grid hidden" style="gap: 16px;"></div>
+      </div>
+    </section>
+
+    <section id="screen-success" class="screen">
+      <div class="panel pad" style="max-width: 760px; margin: 0 auto;">
+        <div class="summary-visual" style="min-height: 320px;">
+          <div>
+            <div class="badge">Бронь подтверждена</div>
+            <h2 style="margin: 16px 0 10px; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1;">Спасибо, заказ создан.</h2>
+            <p id="success-text" style="margin: 0; color: var(--muted); line-height: 1.7; max-width: 52ch;">
+              --
+            </p>
+          </div>
+          <div class="hero-actions" style="margin: 0;">
+            <button class="btn" type="button" id="success-bookings-btn">Перейти к моим броням</button>
+            <button class="btn secondary" type="button" id="success-home-btn">Вернуться в каталог</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="Главная навигация">
+    <button type="button" class="active" data-nav="home"><b>⌂</b><span>Каталог</span></button>
+    <button type="button" data-nav="bookings"><b>◫</b><span>Брони</span></button>
+    <button type="button" data-nav="profile"><b>◉</b><span>Профиль</span></button>
+    <button type="button" data-nav="admin"><b>⚙</b><span>Владелец</span></button>
+    <button type="button" data-nav="auth"><b>⇆</b><span>Вход</span></button>
+  </nav>
+
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="section-head" style="margin-top: 0;">
+        <div>
+          <h3 id="modal-title" class="section-title">Добавить консоль</h3>
+          <p class="section-subtitle">Заполните данные товара и сохраните карточку в каталог.</p>
+        </div>
+        <button class="btn secondary" type="button" id="modal-close-btn">Закрыть</button>
+      </div>
+      <form id="console-form" class="stack">
+        <input type="hidden" id="console-id" />
+        <div class="form-grid">
+          <div class="full">
+            <label for="console-name">Название</label>
+            <input id="console-name" class="input" placeholder="PlayStation 5 Digital" />
+          </div>
+          <div>
+            <label for="console-category">Категория</label>
+            <select id="console-category" class="input">
+              <option>PlayStation</option>
+              <option>Xbox</option>
+              <option>VR</option>
+              <option>Nintendo</option>
+              <option>Accessory</option>
+            </select>
+          </div>
+          <div>
+            <label for="console-price">Цена за сутки</label>
+            <input id="console-price" class="input" type="number" min="0" step="100" placeholder="6500" />
+          </div>
+          <div>
+            <label for="console-status">Статус</label>
+            <select id="console-status" class="input">
+              <option value="available">Доступна</option>
+              <option value="maintenance">На обслуживании</option>
+            </select>
+          </div>
+          <div>
+            <label for="console-emoji">Иконка</label>
+            <input id="console-emoji" class="input" placeholder="🎮" />
+          </div>
+          <div class="full">
+            <label for="console-desc">Описание</label>
+            <textarea id="console-desc" placeholder="Опишите комплект, условия и преимущества."></textarea>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn" type="submit">Сохранить</button>
+          <button class="btn secondary" type="button" id="modal-remove-btn">Удалить карточку</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- ══════════════════ SCRIPT ══════════════════ -->
-    <script>
-    // ─── SHARED DATA ───────────────────────────────
-    let consoles = [
-      { id:1, name:"PlayStation 5",   cat:"PlayStation", desc:"4K Gaming • 2 Джойстик",            price:7000, status:"available",   rentals:24,
-        img:"https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/DZyfg8AM8Nq/components/3XPiwsethM9.png" },
-      { id:2, name:"Xbox Series X",   cat:"Xbox",        desc:"Game Pass Ultimate • 2 Джойстик",   price:6000, status:"available",   rentals:18,
-        img:"https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/DZyfg8AM8Nq/components/QY5XJMBgDZh.png" },
-      { id:3, name:"PlayStation 4 Pro",cat:"PlayStation",desc:"4K Gaming • 2 Джойстик",             price:5000, status:"unavailable", rentals:31, img:null },
-      { id:4, name:"PlayStation VR2", cat:"VR",          desc:"VR Headset • PS5 арналған",          price:8000, status:"available",   rentals:9,  img:null },
-      { id:5, name:"Xbox Series S",   cat:"Xbox",        desc:"Game Pass • 1 Джойстик",             price:4500, status:"available",   rentals:14, img:null },
-    ];
+  <div class="toast" id="toast">
+    <strong id="toast-title">Готово</strong>
+    <small id="toast-text">--</small>
+  </div>
 
-    let adminOrders = [
-      {id:1,console:"PlayStation 5",   client:"Асель Қалиева",    phone:"+7 701 234 56 78",from:"28 мам",to:"30 мам",days:2,total:14000,status:"active"},
-      {id:2,console:"Xbox Series X",   client:"Дамир Нұрланов",   phone:"+7 707 111 22 33",from:"27 мам",to:"29 мам",days:2,total:12000,status:"pending"},
-      {id:3,console:"PlayStation VR2", client:"Берік Мұратов",    phone:"+7 708 555 66 77",from:"28 мам",to:"31 мам",days:3,total:24000,status:"active"},
-      {id:4,console:"Xbox Series S",   client:"Гүлзат Сейтқали",  phone:"+7 702 999 00 11",from:"20 мам",to:"22 мам",days:2,total:9000, status:"done"},
-      {id:5,console:"PlayStation 5",   client:"Арман Жаксыбеков", phone:"+7 705 333 44 55",from:"15 мам",to:"17 мам",days:2,total:14000,status:"done"},
-    ];
+  <footer>
+    GameRent Uralsk · одностраничный сервис аренды, который реально работает в браузере и хранит данные локально.
+  </footer>
 
-    let adminClients = [
-      {id:1,name:"Асель Қалиева",   phone:"+7 701 234 56 78",orders:5,spent:47000},
-      {id:2,name:"Дамир Нұрланов",  phone:"+7 707 111 22 33",orders:3,spent:28000},
-      {id:3,name:"Берік Мұратов",   phone:"+7 708 555 66 77",orders:7,spent:84000},
-      {id:4,name:"Гүлзат Сейтқали", phone:"+7 702 999 00 11",orders:2,spent:15000},
-      {id:5,name:"Арман Жаксыбеков",phone:"+7 705 333 44 55",orders:4,spent:42000},
-    ];
+  <script>
+    const STORAGE_KEY = "gamerent-uralsk-v3";
+    const MONEY = new Intl.NumberFormat("ru-RU");
+    const CATEGORIES = ["all", "PlayStation", "Xbox", "VR", "Nintendo", "Accessory"];
+    const bookingFilters = ["all", "pending", "active", "done"];
+    const adminTabs = ["dashboard", "inventory", "orders", "clients"];
 
-    let myBookings = [];
-    let nextConsoleId = 6;
-    let adminOrderFilter_ = 'all';
-    const STORAGE_KEY = 'gamerent_uralsk_state_v2';
-    let users = [];
-    let currentUser = null;
-    let authRole = 'renter';
-    let memoryState = null;
-
-    function readSavedState() {
-      try {
-        if (window.localStorage) return JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
-      } catch (e) {}
-      return memoryState || {};
-    }
-
-    function writeSavedState(state) {
-      memoryState = state;
-      try {
-        if (window.localStorage) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (e) {}
-    }
-
-    function normalizePhone(raw) {
-      const digits = (raw || '').replace(/\D/g, '');
-      if (!digits) return '';
-      if (digits.length === 10) return '+7 ' + digits.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
-      if (digits.length === 11 && (digits[0] === '7' || digits[0] === '8')) {
-        const d = digits.slice(1);
-        return '+7 ' + d.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    const defaultConsoles = [
+      {
+        id: 1,
+        name: "PlayStation 5 Digital",
+        category: "PlayStation",
+        price: 7500,
+        status: "available",
+        emoji: "🎮",
+        description: "Быстрая консоль для вечеров с друзьями, с актуальными играми и быстрым запуском."
+      },
+      {
+        id: 2,
+        name: "PlayStation 4 Pro",
+        category: "PlayStation",
+        price: 5200,
+        status: "available",
+        emoji: "🕹️",
+        description: "Надёжный вариант для недорогой аренды и большой библиотеки игр."
+      },
+      {
+        id: 3,
+        name: "Xbox Series X",
+        category: "Xbox",
+        price: 7300,
+        status: "available",
+        emoji: "🟩",
+        description: "Сильная производительность, удобный геймпад и быстрый отклик."
+      },
+      {
+        id: 4,
+        name: "Xbox Series S",
+        category: "Xbox",
+        price: 4900,
+        status: "available",
+        emoji: "⬜",
+        description: "Компактная и доступная консоль для домашних сетапов и вечеринок."
+      },
+      {
+        id: 5,
+        name: "Meta Quest 2 VR",
+        category: "VR",
+        price: 8800,
+        status: "available",
+        emoji: "🕶️",
+        description: "Полноценный VR-опыт без проводов, отлично подходит для мероприятий."
+      },
+      {
+        id: 6,
+        name: "Nintendo Switch OLED",
+        category: "Nintendo",
+        price: 6100,
+        status: "available",
+        emoji: "🎯",
+        description: "Портативная консоль, которую удобно брать на выезд и играть в дороге."
+      },
+      {
+        id: 7,
+        name: "DualSense Extra",
+        category: "Accessory",
+        price: 1200,
+        status: "available",
+        emoji: "🎛️",
+        description: "Дополнительный контроллер для локального мультиплеера и турниров."
       }
-      return '+7 ' + digits;
-    }
+    ];
 
+    const state = {
+      user: null,
+      consoles: [],
+      bookings: [],
+      filters: { category: "all", search: "", booking: "all" },
+      ui: { screen: "auth", history: [], adminTab: "dashboard", editingId: null, bookingConsoleId: 1 },
+    };
+
+    const refs = {};
+
+    function $(id) { return document.getElementById(id); }
+    function cloneDefaults() {
+      return defaultConsoles.map((item) => ({ ...item }));
+    }
+    function esc(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+    function formatMoney(value) {
+      return `${MONEY.format(Math.max(0, Number(value) || 0))} ₸`;
+    }
+    function formatDate(value) {
+      if (!value) return "—";
+      const date = new Date(`${value}T12:00:00`);
+      return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short" }).format(date).replace(".", "");
+    }
+    function todayValue(offset = 0) {
+      const d = new Date();
+      d.setDate(d.getDate() + offset);
+      return d.toISOString().slice(0, 10);
+    }
+    function dayDiff(start, end) {
+      const s = new Date(`${start}T12:00:00`);
+      const e = new Date(`${end}T12:00:00`);
+      const diff = Math.round((e - s) / 86400000) + 1;
+      return Number.isFinite(diff) && diff > 0 ? diff : 1;
+    }
+    function toast(title, text) {
+      $("toast-title").textContent = title;
+      $("toast-text").textContent = text;
+      $("toast").classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => $("toast").classList.remove("show"), 2600);
+    }
     function saveState() {
-      writeSavedState({
-        consoles, adminOrders, adminClients, users,
-        currentPhone: currentUser ? currentUser.phone : null,
-        nextConsoleId
-      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        user: state.user,
+        consoles: state.consoles,
+        bookings: state.bookings,
+      }));
     }
-
     function loadState() {
-      try {
-        const saved = readSavedState();
-        if (Array.isArray(saved.consoles)) consoles = saved.consoles;
-        if (Array.isArray(saved.adminOrders)) adminOrders = saved.adminOrders;
-        if (Array.isArray(saved.adminClients)) adminClients = saved.adminClients;
-        if (Array.isArray(saved.users)) users = saved.users;
-        if (saved.nextConsoleId) nextConsoleId = saved.nextConsoleId;
-        currentUser = users.find(u => u.phone === saved.currentPhone) || null;
-        myBookings = currentUser ? (currentUser.bookings || []) : [];
-      } catch (e) {
-        console.warn('State load failed', e);
-      }
-    }
-
-    function setAuthRole(role) {
-      authRole = role;
-      document.getElementById('role-renter').className = role === 'renter'
-        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
-        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
-      document.getElementById('role-owner').className = role === 'owner'
-        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
-        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
-    }
-
-    function authSubmit() {
-      const name = document.getElementById('auth-name').value.trim();
-      const phone = normalizePhone(document.getElementById('auth-phone').value);
-      if (!name || !phone || phone.replace(/\D/g, '').length < 11) {
-        showToast('Атыңызды және телефон нөмірін жазыңыз.');
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        state.consoles = cloneDefaults();
+        state.bookings = [];
+        state.user = null;
         return;
       }
-      let user = users.find(u => u.phone === phone);
-      if (!user) {
-        user = { id: Date.now(), name, phone, role: authRole, bookings: [], orders: 0, spent: 0 };
-        users.push(user);
-        showToast('Аккаунт ашылды!');
-      } else {
-        user.name = name || user.name;
-        user.role = authRole;
-        showToast('Аккаунтқа кірдіңіз!');
+      try {
+        const parsed = JSON.parse(raw);
+        state.user = parsed.user ?? null;
+        state.consoles = Array.isArray(parsed.consoles) && parsed.consoles.length ? parsed.consoles : cloneDefaults();
+        state.bookings = Array.isArray(parsed.bookings) ? parsed.bookings : [];
+      } catch {
+        state.consoles = cloneDefaults();
+        state.bookings = [];
+        state.user = null;
       }
-      currentUser = user;
-      myBookings = currentUser.bookings || [];
-      saveState();
-      goTo(currentUser.role === 'owner' ? 'admin' : 'home');
     }
-
-    function quickDemoAccount() {
-      document.getElementById('auth-name').value = 'Жаңа қолданушы';
-      document.getElementById('auth-phone').value = '707 000 00 00';
-      authSubmit();
+    function seedCurrentBooking() {
+      const first = state.consoles.find((item) => item.status === "available") || state.consoles[0];
+      state.ui.bookingConsoleId = first ? first.id : 1;
+      $("booking-start").value = todayValue(1);
+      $("booking-end").value = todayValue(2);
+      $("booking-delivery").value = "pickup";
+      $("booking-contact").value = state.user?.phone || "";
+      $("booking-address").value = state.user?.note || "";
     }
-
-    function requireAccount() {
-      if (currentUser) return true;
-      showToast('Алдымен аккаунт ашыңыз.');
-      goTo('auth');
-      return false;
+    function currentConsole() {
+      return state.consoles.find((item) => item.id === Number(state.ui.bookingConsoleId)) || state.consoles[0];
     }
-
-    function isOwner() {
-      return currentUser && currentUser.role === 'owner';
+    function getFilteredConsoles() {
+      const q = state.filters.search.trim().toLowerCase();
+      return state.consoles.filter((item) => {
+        const categoryMatch = state.filters.category === "all" || item.category === state.filters.category;
+        const searchMatch = !q || [item.name, item.category, item.description].join(" ").toLowerCase().includes(q);
+        return categoryMatch && searchMatch;
+      });
     }
-
-    function logout() {
-      currentUser = null;
-      myBookings = [];
-      saveState();
-      document.getElementById('auth-name').value = '';
-      document.getElementById('auth-phone').value = '';
-      goTo('auth');
-    }
-
-    // ─── NAVIGATION ────────────────────────────────
-    let history_ = ['auth'];
-    function goTo(name, leftDir = false) {
-      if (name !== 'auth' && !requireAccount()) return;
-      if (name === 'admin' && !isOwner()) {
-        showToast('Құрылғы қосу тек арендодатель аккаунтына қолжетімді.');
-        name = 'profile';
-      }
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active','slide-left'));
-      const next = document.getElementById('screen-' + name);
-      if (!next) return;
-      next.classList.add('active');
-      if (leftDir) next.classList.add('slide-left');
-      history_.push(name);
-      // refresh data on enter
-      if (name === 'home') renderCatalog();
-      if (name === 'booking') initCalendar();
-      if (name === 'bookings-list') renderMyBookings();
-      if (name === 'profile') renderProfile();
-      if (name === 'admin') { renderAdminDashboard(); renderAdminConsoles(); renderAdminOrders(); renderAdminClients(); }
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    function navigate(screen, push = true) {
+      const current = state.ui.screen;
+      if (push && current !== screen) state.ui.history.push(current);
+      state.ui.screen = screen;
+      render();
+      document.querySelectorAll(".nav [data-nav]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.nav === screen);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function goBack() {
-      history_.pop();
-      const prev = history_[history_.length - 1] || 'home';
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active','slide-left'));
-      const el = document.getElementById('screen-' + prev);
-      if (el) { el.classList.add('active','slide-left'); }
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      const prev = state.ui.history.pop();
+      navigate(prev || "home", false);
     }
-
-    // ─── CATALOG ────────────────────────────────────
-    let currentCat = 'all';
-    function setCat(cat) {
-      currentCat = cat;
-      document.querySelectorAll('.cat-btn').forEach(b => {
-        b.className = 'cat-btn px-5 py-2 rounded-full text-sm font-bold ' +
-          (b.id === 'cat-' + cat ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground');
-      });
-      renderCatalog();
+    function requireUser() {
+      if (!state.user) {
+        toast("Нужен вход", "Сначала создайте профиль клиента или владельца.");
+        navigate("auth");
+        return false;
+      }
+      return true;
     }
-    function filterCatalog() { renderCatalog(); }
-
-    const catIcons = {PlayStation:'solar:gamepad-bold-duotone',Xbox:'solar:gamepad-bold',VR:'solar:vr-linear'};
-    const gamesList = {
-      PlayStation:['FC 25','UFC 5','Mortal Kombat 1','GTA V','Spider-Man 2'],
-      Xbox:['Forza Horizon 5','Halo Infinite','Mortal Kombat 11','Sea of Thieves'],
-      VR:['Beat Saber','Superhot VR','Half-Life: Alyx'],
-    };
-
+    function requireOwner() {
+      if (!requireUser()) return false;
+      if (state.user.role !== "owner") {
+        toast("Доступ ограничен", "Кабинет владельца открыт только для аккаунта owner.");
+        return false;
+      }
+      return true;
+    }
+    function bookingTotal(consoleItem, start, end, deliveryMode) {
+      const days = dayDiff(start, end);
+      const delivery = deliveryMode === "delivery" ? 1800 : 0;
+      return {
+        days,
+        delivery,
+        subtotal: days * consoleItem.price,
+        total: days * consoleItem.price + delivery,
+      };
+    }
+    function renderHeroStats() {
+      const activeBookings = state.bookings.filter((item) => item.status === "active").length;
+      const allBookings = state.bookings.length;
+      const available = state.consoles.filter((item) => item.status === "available").length;
+      const clients = new Set(state.bookings.map((item) => item.phone).filter(Boolean)).size || (state.user ? 1 : 0);
+      const stats = [
+        { value: `${state.consoles.length}`, label: "единиц в каталоге" },
+        { value: `${available}`, label: "доступно сейчас" },
+        { value: `${allBookings}`, label: "всего броней" },
+        { value: `${clients}`, label: "клиентов" },
+      ];
+      $("hero-stats").innerHTML = stats.map((item) => `
+        <div class="stat">
+          <strong>${esc(item.value)}</strong>
+          <span>${esc(item.label)}</span>
+        </div>
+      `).join("");
+    }
+    function renderChips() {
+      $("category-chips").innerHTML = CATEGORIES.map((category) => `
+        <button type="button" class="chip ${state.filters.category === category ? "active" : ""}" data-category="${category}">
+          ${category === "all" ? "Все категории" : esc(category)}
+        </button>
+      `).join("");
+    }
+    function renderHomeKpis() {
+      const all = state.consoles.length;
+      const available = state.consoles.filter((item) => item.status === "available").length;
+      const avg = all ? Math.round(state.consoles.reduce((sum, item) => sum + item.price, 0) / all) : 0;
+      const orders = state.bookings.length;
+      $("home-kpis").innerHTML = [
+        { value: `${all}`, label: "консолей и аксессуаров" },
+        { value: `${available}`, label: "можно бронировать" },
+        { value: formatMoney(avg), label: "средняя цена в сутки" },
+        { value: `${orders}`, label: "бронирований в системе" },
+      ].map((item) => `
+        <div class="kpi">
+          <strong>${esc(item.value)}</strong>
+          <span>${esc(item.label)}</span>
+        </div>
+      `).join("");
+    }
     function renderCatalog() {
-      const q = (document.getElementById('home-search').value || '').toLowerCase();
-      const list = document.getElementById('catalog-list');
-      const filtered = consoles.filter(c =>
-        (currentCat === 'all' || c.cat === currentCat) &&
-        c.name.toLowerCase().includes(q)
-      );
-      if (!filtered.length) {
-        list.innerHTML = `<div class="text-center py-16 text-muted-foreground font-medium text-sm">Ештеңе табылмады</div>`;
+      const items = getFilteredConsoles();
+      $("catalog-count").textContent = `${items.length} из ${state.consoles.length}`;
+      if (!items.length) {
+        $("catalog-list").innerHTML = `
+          <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 30px;">
+            <h4 style="margin: 0 0 8px;">Ничего не найдено</h4>
+            <p class="meta" style="margin: 0;">Попробуйте другой запрос или сбросьте фильтры.</p>
+          </div>
+        `;
         return;
       }
-      list.innerHTML = filtered.map(c => {
-        const avail = c.status === 'available';
-        const games = (gamesList[c.cat] || []).slice(0,3);
-        const extra = (gamesList[c.cat] || []).length - 3;
-        return `
-        <div class="bg-card rounded-[1.5rem] p-5 shadow-sm border border-border flex flex-col ${avail ? '' : 'opacity-70'}">
-          <div class="flex justify-between items-start mb-4">
-            <div class="${avail ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'} px-3 py-1 rounded-full text-xs font-bold tracking-wide">
-              ${avail ? 'ҚОЛЖЕТІМДІ' : 'ҚОЛЖЕТІМСІЗ'}
+      $("catalog-list").innerHTML = items.map((item) => `
+        <article class="card console-card">
+          <div class="console-top">
+            <div class="icon-box" aria-hidden="true">${esc(item.emoji || "🎮")}</div>
+            <div style="min-width: 0;">
+              <div class="badge">${esc(item.category)}</div>
+              <h4 style="margin-top: 10px;">${esc(item.name)}</h4>
+              <p class="meta">${esc(item.description)}</p>
             </div>
-            <button class="text-muted-foreground"><iconify-icon icon="solar:heart-angle-linear" class="text-2xl"></iconify-icon></button>
           </div>
-          <div class="flex items-center justify-center h-40 mb-4 bg-secondary/50 rounded-2xl ${avail ? '' : 'grayscale'}">
-            ${c.img
-              ? `<img src="${c.img}" alt="${c.name}" class="h-32 object-contain" />`
-              : `<iconify-icon icon="${catIcons[c.cat]||'solar:gamepad-bold-duotone'}" class="text-6xl text-muted-foreground"></iconify-icon>`}
-          </div>
-          <div class="flex justify-between items-end mb-4">
+          <div class="price">
             <div>
-              <h2 class="text-xl font-bold mb-1">${c.name}</h2>
-              <p class="text-muted-foreground text-sm font-medium">${c.desc}</p>
+              <strong>${formatMoney(item.price)}</strong>
+              <span>/ сутки</span>
             </div>
-            <div class="text-right">
-              <span class="text-xl font-extrabold">${c.price.toLocaleString()} ₸</span>
-              <span class="text-muted-foreground text-xs font-medium block">/ тәулік</span>
-            </div>
+            <span class="badge">${item.status === "available" ? "В наличии" : "На обслуживании"}</span>
           </div>
-          <div class="border-t border-border pt-4 mb-5">
-            <p class="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-2">Топ ойындар ішінде:</p>
-            <div class="flex flex-wrap gap-2">
-              ${games.map(g=>`<span class="px-2 py-1 bg-secondary rounded-md text-xs font-medium">${g}</span>`).join('')}
-              ${extra > 0 ? `<span class="px-2 py-1 bg-secondary rounded-md text-xs font-medium">+${extra} ойын</span>` : ''}
-            </div>
+          <div class="hero-actions" style="margin: 0;">
+            <button class="btn" type="button" data-book="${item.id}" ${item.status !== "available" ? "disabled style='opacity:.6; cursor:not-allowed;'" : ""}>Забронировать</button>
+            <button class="btn secondary" type="button" data-copy="${item.id}">Подробнее</button>
           </div>
-          ${avail
-            ? `<button onclick="startBooking(${c.id})" class="w-full bg-primary text-primary-foreground py-4 rounded-full font-bold text-sm">Брондау</button>`
-            : `<button class="w-full bg-secondary text-secondary-foreground py-4 rounded-full font-bold text-sm" disabled>Қазір бос емес</button>`
-          }
-        </div>`;
-      }).join('');
+        </article>
+      `).join("");
     }
-
-    // ─── PROFILE ────────────────────────────────────
+    function renderBookingScreen() {
+      const item = currentConsole();
+      if (!item) return;
+      $("booking-console").innerHTML = state.consoles.map((consoleItem) => `
+        <option value="${consoleItem.id}">${esc(consoleItem.name)} · ${formatMoney(consoleItem.price)}</option>
+      `).join("");
+      $("booking-console").value = String(item.id);
+      $("booking-title").textContent = item.name;
+      $("booking-desc").textContent = item.description;
+      $("booking-price").textContent = formatMoney(item.price);
+      $("booking-category-badge").textContent = item.category;
+      $("booking-availability").textContent = item.status === "available" ? "Доступно" : "На обслуживании";
+      $("booking-availability").style.color = item.status === "available" ? "var(--success)" : "var(--warning)";
+      const start = $("booking-start").value || todayValue(1);
+      const end = $("booking-end").value || todayValue(2);
+      const deliveryMode = $("booking-delivery").value || "pickup";
+      const totals = bookingTotal(item, start, end, deliveryMode);
+      $("booking-days").textContent = String(totals.days);
+      $("booking-delivery-fee").textContent = formatMoney(totals.delivery);
+      $("booking-total").textContent = formatMoney(totals.total);
+    }
+    function renderBookings() {
+      const filter = state.filters.booking;
+      const list = $("bookings-list");
+      const items = state.bookings.filter((item) => filter === "all" || item.status === filter);
+      $("bookings-summary").textContent = `${items.length} заказов в фильтре`;
+      if (!items.length) {
+        list.innerHTML = `
+          <div class="card" style="text-align:center; padding: 30px;">
+            <h4 style="margin: 0 0 8px;">Броней пока нет</h4>
+            <p class="meta" style="margin: 0;">Сделайте первую бронь в каталоге, и она появится здесь.</p>
+          </div>
+        `;
+        return;
+      }
+      list.innerHTML = items.map((item) => `
+        <article class="list-item">
+          <div>
+            <div style="display:flex; gap: 10px; flex-wrap: wrap; align-items:center; margin-bottom: 8px;">
+              <span class="status ${item.status}">${item.status === "pending" ? "Ожидает" : item.status === "active" ? "Активна" : "Закрыта"}</span>
+              <span class="badge">${esc(item.category)}</span>
+            </div>
+            <h4>${esc(item.console)}</h4>
+            <p>${esc(item.from)} – ${esc(item.to)} · ${esc(item.days)} дн. · ${formatMoney(item.total)}</p>
+            <p>${esc(item.deliveryMode === "delivery" ? "Доставка по адресу" : "Самовывоз")} · ${esc(item.address || "Адрес не указан")}</p>
+          </div>
+          <div>
+            <p class="meta" style="text-align:right; margin-bottom: 8px;">${esc(item.name)}<br>${esc(item.phone)}</p>
+            <div class="order-actions">
+              <button type="button" class="btn secondary" data-repeat-booking="${item.consoleId}">Повторить</button>
+              ${item.status !== "done" ? `<button type="button" class="btn" data-close-booking="${item.id}">Закрыть</button>` : ""}
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
     function renderProfile() {
-      if (!currentUser) return;
-      const bookings = currentUser.bookings || [];
-      const spent = bookings.reduce((sum, b) => sum + (b.total || 0), 0);
-      currentUser.orders = bookings.length;
-      currentUser.spent = spent;
-      document.getElementById('profile-initial').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
-      document.getElementById('profile-name').textContent = currentUser.name || 'Қолданушы';
-      document.getElementById('profile-phone').textContent = currentUser.phone || '—';
-      document.getElementById('profile-role').textContent = currentUser.role === 'owner' ? 'Арендодатель' : 'Арендатор';
-      document.getElementById('profile-orders').textContent = bookings.length;
-      document.getElementById('profile-spent').textContent = spent.toLocaleString() + ' ₸';
-      document.getElementById('profile-admin-btn').classList.toggle('hidden', currentUser.role !== 'owner');
-      document.getElementById('owner-add-device-btn').classList.toggle('hidden', currentUser.role !== 'owner');
-      saveState();
-    }
-
-    // ─── BOOKING ────────────────────────────────────
-    let bookingConsoleId = null;
-    let calYear, calMonth, selStart = null, selEnd = null;
-    let deliveryMode = true;
-
-    function startBooking(id) {
-      bookingConsoleId = id;
-      const c = consoles.find(x => x.id === id);
-      document.getElementById('booking-name').textContent = c.name;
-      document.getElementById('booking-price-label').innerHTML =
-        `${c.price.toLocaleString()} ₸ <span class="text-muted-foreground font-medium text-xs">/ тәулік</span>`;
-      // icon vs image
-      const wrap = document.getElementById('booking-img-wrap');
-      if (c.img) {
-        wrap.innerHTML = `<img src="${c.img}" class="w-14 object-contain" />`;
-      } else {
-        wrap.innerHTML = `<iconify-icon icon="${catIcons[c.cat]||'solar:gamepad-bold-duotone'}" class="text-4xl text-accent"></iconify-icon>`;
-      }
-      selStart = null; selEnd = null;
-      updateBookingSummary();
-      goTo('booking');
-    }
-
-    function initCalendar() {
-      const now = new Date();
-      calYear = now.getFullYear();
-      calMonth = now.getMonth();
-      renderCalendar();
-    }
-    function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
-    function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
-
-    const KK_MONTHS = ['Қаңтар','Ақпан','Наурыз','Сәуір','Мамыр','Маусым','Шілде','Тамыз','Қыркүйек','Қазан','Қараша','Желтоқсан'];
-
-    function renderCalendar() {
-      document.getElementById('cal-month-label').textContent = `${KK_MONTHS[calMonth]} ${calYear}`;
-      const grid = document.getElementById('cal-grid');
-      const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
-      const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-      const today = new Date(); today.setHours(0,0,0,0);
-      // Mon-first offset
-      const offset = (firstDay + 6) % 7;
-      let html = '';
-      for (let i = 0; i < offset; i++) html += `<div></div>`;
-      for (let d = 1; d <= daysInMonth; d++) {
-        const date = new Date(calYear, calMonth, d);
-        const isPast = date < today;
-        let cls = 'h-10 flex items-center justify-center font-medium text-sm rounded-full mx-auto w-10 transition-colors ';
-        if (isPast) { cls += 'text-muted-foreground/30 cursor-not-allowed'; }
-        else if (selStart && selEnd) {
-          const ds = Math.min(selStart,selEnd), de = Math.max(selStart,selEnd);
-          const t = date.getTime();
-          if (t === ds || t === de) cls += 'bg-primary text-primary-foreground font-bold';
-          else if (t > ds && t < de) cls += 'bg-primary/15 text-foreground rounded-none w-full';
-          else cls += 'hover:bg-secondary';
-        } else if (selStart && date.getTime() === selStart) {
-          cls += 'bg-primary text-primary-foreground font-bold';
-        } else { cls += 'hover:bg-secondary'; }
-        html += `<button class="${cls}" onclick="pickDay(${date.getTime()})" ${isPast?'disabled':''}>${d}</button>`;
-      }
-      grid.innerHTML = html;
-    }
-
-    function pickDay(ts) {
-      if (!selStart || (selStart && selEnd)) { selStart = ts; selEnd = null; }
-      else if (ts < selStart) { selEnd = selStart; selStart = ts; }
-      else { selEnd = ts; }
-      renderCalendar();
-      updateBookingSummary();
-    }
-
-    function updateBookingSummary() {
-      const c = consoles.find(x => x.id === bookingConsoleId);
-      if (!c) return;
-      if (selStart && selEnd) {
-        const days = Math.round((selEnd - selStart) / 86400000) + 1;
-        const total = days * c.price;
-        document.getElementById('sum-days').textContent = `Мерзімі: ${days} тәулік`;
-        document.getElementById('sum-sub').textContent = total.toLocaleString() + ' ₸';
-        document.getElementById('sum-total').textContent = total.toLocaleString() + ' ₸';
-      } else {
-        document.getElementById('sum-days').textContent = 'Мерзімі: — тәулік';
-        document.getElementById('sum-sub').textContent = '— ₸';
-        document.getElementById('sum-total').textContent = '— ₸';
-      }
-    }
-
-    function setDelivery(v) {
-      deliveryMode = v;
-      document.getElementById('del-btn').className = v
-        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
-        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
-      document.getElementById('pickup-btn').className = !v
-        ? 'flex-1 py-3 rounded-full bg-card text-foreground font-bold text-sm shadow-sm'
-        : 'flex-1 py-3 rounded-full text-muted-foreground font-bold text-sm';
-      document.getElementById('address-wrap').style.display = v ? 'block' : 'none';
-    }
-
-    function confirmBooking() {
-      if (!requireAccount()) return;
-      const c = consoles.find(x => x.id === bookingConsoleId);
-      if (!selStart || !selEnd) { showToast('Күндерді таңдаңыз!'); return; }
-      const days = Math.round((selEnd - selStart) / 86400000) + 1;
-      const total = days * c.price;
-      const fmtDate = ts => {
-        const d = new Date(ts);
-        return `${d.getDate()} ${KK_MONTHS[d.getMonth()].slice(0,3).toLowerCase()}`;
-      };
-      const booking = { console: c.name, from: fmtDate(selStart), to: fmtDate(selEnd), days, total, status: 'active' };
-      myBookings.unshift(booking);
-      currentUser.bookings = myBookings;
-      currentUser.orders = myBookings.length;
-      currentUser.spent = myBookings.reduce((sum, b) => sum + (b.total || 0), 0);
-      // success screen
-      document.getElementById('sc-name').textContent = c.name;
-      document.getElementById('sc-dates').textContent = `${booking.from} – ${booking.to}`;
-      document.getElementById('sc-total').textContent = total.toLocaleString() + ' ₸';
-      document.getElementById('success-msg').textContent = deliveryMode ? 'Консоль сізге жеткізіледі' : 'Өзіңіз алып кетуге болады';
-      // add to admin orders
-      adminOrders.unshift({
-        id: adminOrders.length + 10,
-        console: c.name, client: currentUser.name, phone: currentUser.phone,
-        from: booking.from, to: booking.to, days, total, status: 'active'
-      });
-      let client = adminClients.find(x => x.phone === currentUser.phone);
-      if (!client) {
-        client = { id: Date.now(), name: currentUser.name, phone: currentUser.phone, orders: 0, spent: 0 };
-        adminClients.unshift(client);
-      }
-      client.name = currentUser.name;
-      client.orders = (client.orders || 0) + 1;
-      client.spent = (client.spent || 0) + total;
-      saveState();
-      goTo('booking-success');
-    }
-
-    // ─── MY BOOKINGS ────────────────────────────────
-    function renderMyBookings() {
-      const el = document.getElementById('my-bookings-list');
-      if (!myBookings.length) {
-        el.innerHTML = `<div class="text-center py-16 text-muted-foreground font-medium text-sm">Брондаулар жоқ</div>`;
+      if (!state.user) {
+        $("profile-role-badge").textContent = "Гость";
+        $("profile-name").textContent = "Профиль не создан";
+        $("profile-phone").textContent = "Войдите, чтобы увидеть персональные данные.";
+        $("profile-kpis").innerHTML = "";
+        $("profile-admin-btn").disabled = true;
         return;
       }
-      const statusCfg = {
-        active: {label:'БЕЛСЕНДІ', bg:'bg-green-100 text-green-700'},
-        pending:{label:'КҮТУ',     bg:'bg-orange-100 text-orange-600'},
-        done:   {label:'АЯҚТАЛДЫ',bg:'bg-muted text-muted-foreground'}
-      };
-      el.innerHTML = myBookings.map(b => {
-        const sc = statusCfg[b.status] || statusCfg.active;
-        return `
-        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm">
-          <div class="flex justify-between items-start mb-3">
-            <span class="${sc.bg} px-3 py-1 rounded-full text-xs font-bold">${sc.label}</span>
-            <span class="font-extrabold text-sm">${b.total.toLocaleString()} ₸</span>
-          </div>
-          <h3 class="font-bold text-lg mb-1">${b.console}</h3>
-          <p class="text-muted-foreground text-sm font-medium">${b.from} – ${b.to} · ${b.days} тәулік</p>
-        </div>`;
-      }).join('');
+      $("profile-role-badge").textContent = state.user.role === "owner" ? "Владелец" : "Клиент";
+      $("profile-name").textContent = state.user.name;
+      $("profile-phone").textContent = `${state.user.phone}${state.user.note ? " · " + state.user.note : ""}`;
+      $("profile-admin-btn").disabled = state.user.role !== "owner";
+      const myBookings = state.bookings.filter((item) => item.phone === state.user.phone);
+      const totalSpent = myBookings.reduce((sum, item) => sum + Number(item.total || 0), 0);
+      const active = myBookings.filter((item) => item.status === "active").length;
+      const done = myBookings.filter((item) => item.status === "done").length;
+      $("profile-kpis").innerHTML = [
+        { value: `${myBookings.length}`, label: "моих броней" },
+        { value: formatMoney(totalSpent), label: "сумма заказов" },
+        { value: `${active} / ${done}`, label: "активных / закрытых" },
+      ].map((item) => `
+        <div class="kpi">
+          <strong>${esc(item.value)}</strong>
+          <span>${esc(item.label)}</span>
+        </div>
+      `).join("");
     }
-
-    // ─── ADMIN DASHBOARD ────────────────────────────
+    function clientGroups() {
+      const map = new Map();
+      for (const booking of state.bookings) {
+        const key = booking.phone || booking.name || "unknown";
+        if (!map.has(key)) {
+          map.set(key, { name: booking.client || booking.name || "Клиент", phone: booking.phone || "—", orders: 0, spent: 0 });
+        }
+        const current = map.get(key);
+        current.name = booking.client || current.name;
+        current.phone = booking.phone || current.phone;
+        current.orders += 1;
+        current.spent += Number(booking.total || 0);
+      }
+      return [...map.values()].sort((a, b) => b.spent - a.spent);
+    }
+    function renderAdmin() {
+      if (!requireOwner()) return;
+      adminTabSet(state.ui.adminTab);
+    }
     function renderAdminDashboard() {
-      const avail = consoles.filter(c=>c.status==='available').length;
-      document.getElementById('stat-available').textContent = `${avail} / ${consoles.length}`;
-      const active = adminOrders.filter(o=>o.status==='active').length;
-      document.getElementById('stat-active-orders').textContent = active;
-      const recent = adminOrders.slice(0,3);
-      document.getElementById('admin-recent-orders').innerHTML = recent.map(o => `
-        <div class="flex items-center gap-3 p-3 bg-secondary rounded-2xl">
-          <div class="w-10 h-10 bg-card rounded-xl flex items-center justify-center border border-border">
-            <iconify-icon icon="solar:gamepad-bold-duotone" class="text-lg text-accent"></iconify-icon>
+      const totalRevenue = state.bookings.reduce((sum, item) => sum + Number(item.total || 0), 0);
+      const active = state.bookings.filter((item) => item.status === "active").length;
+      const pending = state.bookings.filter((item) => item.status === "pending").length;
+      const available = state.consoles.filter((item) => item.status === "available").length;
+      $("admin-dashboard").innerHTML = `
+        <div class="kpi-grid" style="grid-column: 1 / -1;">
+          <div class="kpi"><strong>${formatMoney(totalRevenue)}</strong><span>оборот по бронированиям</span></div>
+          <div class="kpi"><strong>${active}</strong><span>активных заказов</span></div>
+          <div class="kpi"><strong>${pending}</strong><span>ожидают подтверждения</span></div>
+          <div class="kpi"><strong>${available}</strong><span>единиц доступно</span></div>
+        </div>
+        <div class="card">
+          <h4 style="margin-top: 0;">Последние заказы</h4>
+          <div class="table-list" id="admin-recent-orders"></div>
+        </div>
+      `;
+      const recent = [...state.bookings].slice(0, 4);
+      $("admin-recent-orders").innerHTML = recent.length ? recent.map((item) => `
+        <div class="list-item">
+          <div>
+            <h4>${esc(item.console)} · ${esc(item.client)}</h4>
+            <p>${esc(item.from)} – ${esc(item.to)} · ${formatMoney(item.total)}</p>
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="font-bold text-sm truncate">${o.console} — ${o.client}</p>
-            <p class="text-muted-foreground text-xs font-medium">${o.from} – ${o.to} · ${o.total.toLocaleString()} ₸</p>
-          </div>
-          <span class="w-2 h-2 rounded-full flex-shrink-0 ${o.status==='active'?'bg-green-500':o.status==='pending'?'bg-orange-400':'bg-muted-foreground'}"></span>
-        </div>`).join('');
+          <span class="status ${item.status}">${item.status}</span>
+        </div>
+      `).join("") : `<p class="meta">Пока нет заказов для отображения.</p>`;
     }
-
-    // ─── ADMIN TABS ─────────────────────────────────
-    function adminTab(tab) {
-      ['dashboard','consoles','orders','clients'].forEach(t => {
-        document.getElementById('aview-' + t).classList.toggle('hidden', t !== tab);
-        const btn = document.getElementById('atab-' + t);
-        if (btn) btn.className = 'atab-btn px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap ' +
-          (t === tab ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground');
-      });
-      if (tab==='consoles') renderAdminConsoles();
-      if (tab==='orders') renderAdminOrders();
-      if (tab==='clients') renderAdminClients();
-      if (tab==='dashboard') renderAdminDashboard();
-    }
-
-    // ─── ADMIN CONSOLES ─────────────────────────────
-    function renderAdminConsoles() {
-      const el = document.getElementById('admin-console-list');
-      el.innerHTML = consoles.map(c => `
-        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm">
-          <div class="flex justify-between items-start mb-4">
-            <span class="${c.status==='available'?'bg-green-100 text-green-700':'bg-muted text-muted-foreground'} px-3 py-1 rounded-full text-xs font-bold">
-              ${c.status==='available'?'ҚОЛЖЕТІМДІ':'ҚОЛЖЕТІМСІЗ'}
-            </span>
-            <div class="flex gap-2">
-              <button onclick="adminOpenEdit(${c.id})" class="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
-                <iconify-icon icon="solar:pen-bold" class="text-base"></iconify-icon>
-              </button>
-              <button onclick="adminDeleteConsole(${c.id})" class="w-9 h-9 rounded-full bg-destructive/10 flex items-center justify-center">
-                <iconify-icon icon="solar:trash-bin-trash-bold" class="text-base text-destructive"></iconify-icon>
-              </button>
+    function renderAdminInventory() {
+      $("admin-inventory").innerHTML = state.consoles.map((item) => `
+        <div class="list-item">
+          <div>
+            <div style="display:flex; gap: 10px; flex-wrap: wrap; align-items:center; margin-bottom: 8px;">
+              <span class="status ${item.status === "available" ? "active" : "pending"}">${item.status === "available" ? "В наличии" : "На обслуживании"}</span>
+              <span class="badge">${esc(item.category)}</span>
             </div>
+            <h4>${esc(item.emoji || "🎮")} ${esc(item.name)}</h4>
+            <p>${esc(item.description)}</p>
+            <p>${formatMoney(item.price)} / сутки</p>
           </div>
-          <div class="flex items-center gap-4 mb-4">
-            <div class="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center flex-shrink-0">
-              ${c.img
-                ? `<img src="${c.img}" class="w-12 object-contain" />`
-                : `<iconify-icon icon="${catIcons[c.cat]||'solar:gamepad-bold'}" class="text-3xl text-accent"></iconify-icon>`}
-            </div>
-            <div class="flex-1">
-              <h2 class="text-lg font-bold">${c.name}</h2>
-              <p class="text-muted-foreground text-sm font-medium">${c.desc}</p>
-            </div>
+          <div class="order-actions">
+            <button type="button" class="btn secondary" data-edit-console="${item.id}">Редактировать</button>
           </div>
-          <div class="flex justify-between items-center border-t border-border pt-4">
-            <div>
-              <span class="text-xl font-extrabold">${c.price.toLocaleString()} ₸</span>
-              <span class="text-muted-foreground text-xs font-medium ml-1">/ тәулік</span>
-            </div>
-            <span class="text-xs font-bold text-muted-foreground bg-secondary px-3 py-1 rounded-full">${c.rentals} жалға алу</span>
-          </div>
-        </div>`).join('');
+        </div>
+      `).join("");
     }
-
-    function adminAddConsole() {
-      if (!isOwner()) { showToast('Тек арендодатель құрылғы қоса алады.'); return; }
-      const name = document.getElementById('nc-name').value.trim();
-      const price = parseInt(document.getElementById('nc-price').value);
-      const cat = document.getElementById('nc-cat').value;
-      const desc = document.getElementById('nc-desc').value.trim();
-      if (!name || !price) { showToast('Өрістерді толтырыңыз!'); return; }
-      nextConsoleId++;
-      consoles.push({ id:nextConsoleId, name, cat, desc:desc||cat, price, status:'available', rentals:0, img:null });
-      closeModal('modal-add-console');
-      renderAdminConsoles(); renderCatalog(); renderAdminDashboard();
-      ['nc-name','nc-price','nc-desc'].forEach(id => document.getElementById(id).value='');
-      saveState();
-      showToast('Консоль сәтті қосылды!');
-    }
-
-    function adminOpenEdit(id) {
-      const c = consoles.find(x=>x.id===id);
-      document.getElementById('ec-id').value = id;
-      document.getElementById('ec-name').value = c.name;
-      document.getElementById('ec-price').value = c.price;
-      document.getElementById('ec-status').value = c.status;
-      openModal('modal-edit-console');
-    }
-    function adminSaveEdit() {
-      const id = parseInt(document.getElementById('ec-id').value);
-      const c = consoles.find(x=>x.id===id);
-      c.name = document.getElementById('ec-name').value;
-      c.price = parseInt(document.getElementById('ec-price').value);
-      c.status = document.getElementById('ec-status').value;
-      closeModal('modal-edit-console');
-      renderAdminConsoles(); renderCatalog(); renderAdminDashboard();
-      saveState();
-      showToast('Өзгерістер сақталды!');
-    }
-    function adminDeleteConsole(id) {
-      consoles = consoles.filter(c=>c.id!==id);
-      renderAdminConsoles(); renderCatalog(); renderAdminDashboard();
-      saveState();
-      showToast('Консоль жойылды.');
-    }
-
-    // ─── ADMIN ORDERS ────────────────────────────────
-    const orderStatusCfg = {
-      active: {label:'БЕЛСЕНДІ', bg:'bg-green-100 text-green-700'},
-      pending:{label:'КҮТУ',     bg:'bg-orange-100 text-orange-600'},
-      done:   {label:'АЯҚТАЛДЫ',bg:'bg-muted text-muted-foreground'}
-    };
-
-    function adminOrderFilter(f) {
-      adminOrderFilter_ = f;
-      ['all','active','pending','done'].forEach(k => {
-        const btn = document.getElementById('aof-' + k);
-        if (btn) btn.className = 'aof-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap ' +
-          (k===f ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground');
-      });
-      renderAdminOrders();
-    }
-
     function renderAdminOrders() {
-      const filtered = adminOrderFilter_==='all' ? adminOrders : adminOrders.filter(o=>o.status===adminOrderFilter_);
-      const el = document.getElementById('admin-orders-list');
-      if (!filtered.length) { el.innerHTML = `<div class="text-center py-12 text-muted-foreground font-medium text-sm">Тапсырыстар жоқ</div>`; return; }
-      el.innerHTML = filtered.map(o => {
-        const sc = orderStatusCfg[o.status];
-        return `
-        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm">
-          <div class="flex justify-between items-start mb-3">
-            <span class="${sc.bg} px-3 py-1 rounded-full text-xs font-bold">${sc.label}</span>
-            <span class="font-extrabold text-sm">${o.total.toLocaleString()} ₸</span>
+      $("admin-orders").innerHTML = state.bookings.length ? state.bookings.map((item) => `
+        <div class="list-item">
+          <div>
+            <h4>${esc(item.console)} · ${esc(item.client)}</h4>
+            <p>${esc(item.phone)} · ${esc(item.from)} – ${esc(item.to)} · ${formatMoney(item.total)}</p>
+            <p>${esc(item.deliveryMode === "delivery" ? "Доставка" : "Самовывоз")} · ${esc(item.address || "Без адреса")}</p>
           </div>
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
-              <iconify-icon icon="solar:user-bold" class="text-base text-muted-foreground"></iconify-icon>
+          <div>
+            <div style="text-align:right; margin-bottom: 10px;">
+              <span class="status ${item.status}">${item.status}</span>
             </div>
-            <div>
-              <p class="font-bold text-sm">${o.client}</p>
-              <p class="text-muted-foreground text-xs font-medium">${o.phone}</p>
+            <div class="order-actions">
+              <button type="button" class="btn secondary" data-order-status="${item.id}:pending">Ожидание</button>
+              <button type="button" class="btn secondary" data-order-status="${item.id}:active">Активна</button>
+              <button type="button" class="btn secondary" data-order-status="${item.id}:done">Закрыта</button>
             </div>
           </div>
-          <div class="border-t border-border pt-3 flex justify-between items-center">
-            <div><p class="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Консоль</p><p class="font-bold text-sm">${o.console}</p></div>
-            <div class="text-right"><p class="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Мерзімі</p><p class="font-bold text-sm">${o.from} – ${o.to}</p></div>
-          </div>
-          ${o.status==='pending'?`
-          <div class="flex gap-2 mt-4">
-            <button onclick="adminUpdateOrder(${o.id},'active')" class="flex-1 h-11 rounded-full bg-primary text-primary-foreground font-bold text-xs">Растау</button>
-            <button onclick="adminUpdateOrder(${o.id},'done')" class="flex-1 h-11 rounded-full bg-secondary text-secondary-foreground font-bold text-xs">Аяқтау</button>
-          </div>`:''}
-          ${o.status==='active'?`
-          <button onclick="adminUpdateOrder(${o.id},'done')" class="w-full mt-4 h-11 rounded-full bg-secondary text-secondary-foreground font-bold text-xs">Аяқталды деп белгілеу</button>`:''}
-        </div>`;
-      }).join('');
+        </div>
+      `).join("") : `<div class="card"><p class="meta" style="margin:0;">Заказов пока нет.</p></div>`;
     }
-
-    function adminUpdateOrder(id, status) {
-      const o = adminOrders.find(x=>x.id===id);
-      if (o) o.status = status;
-      renderAdminOrders(); renderAdminDashboard();
-      saveState();
-      showToast(status==='active' ? 'Тапсырыс расталды!' : 'Тапсырыс аяқталды!');
-    }
-
-    // ─── ADMIN CLIENTS ───────────────────────────────
     function renderAdminClients() {
-      const q = (document.getElementById('admin-client-search')?.value||'').toLowerCase();
-      const filtered = adminClients.filter(c=>c.name.toLowerCase().includes(q)||c.phone.includes(q));
-      const el = document.getElementById('admin-clients-list');
-      if (!filtered.length) { el.innerHTML = `<div class="text-center py-12 text-muted-foreground font-medium text-sm">Клиент табылмады</div>`; return; }
-      el.innerHTML = filtered.map(c=>`
-        <div class="bg-card rounded-[1.5rem] p-5 border border-border shadow-sm flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0">
-            <span class="text-primary-foreground font-extrabold text-lg">${c.name.charAt(0)}</span>
+      const clients = clientGroups();
+      $("admin-clients").innerHTML = clients.length ? clients.map((item) => `
+        <div class="list-item">
+          <div>
+            <h4>${esc(item.name)}</h4>
+            <p>${esc(item.phone)}</p>
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="font-bold text-base truncate">${c.name}</p>
-            <p class="text-muted-foreground text-xs font-medium">${c.phone}</p>
+          <div style="text-align:right;">
+            <strong>${formatMoney(item.spent)}</strong>
+            <p>${item.orders} заказов</p>
           </div>
-          <div class="text-right flex-shrink-0">
-            <p class="font-extrabold text-sm">${c.spent.toLocaleString()} ₸</p>
-            <p class="text-muted-foreground text-xs font-medium">${c.orders} тапсырыс</p>
-          </div>
-        </div>`).join('');
+        </div>
+      `).join("") : `<div class="card"><p class="meta" style="margin:0;">Клиентов пока нет.</p></div>`;
+    }
+    function adminTabSet(tab) {
+      state.ui.adminTab = tab;
+      adminTabs.forEach((name) => {
+        $("admin-" + name).classList.toggle("hidden", name !== tab);
+      });
+      document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.adminTab === tab);
+      });
+      renderAdminDashboard();
+      renderAdminInventory();
+      renderAdminOrders();
+      renderAdminClients();
+    }
+    function openConsoleModal(id = null) {
+      state.ui.editingId = id;
+      const existing = state.consoles.find((item) => item.id === id);
+      $("modal-title").textContent = existing ? "Редактировать консоль" : "Добавить консоль";
+      $("modal-remove-btn").style.display = existing ? "inline-flex" : "none";
+      $("console-id").value = existing ? existing.id : "";
+      $("console-name").value = existing?.name || "";
+      $("console-category").value = existing?.category || "PlayStation";
+      $("console-price").value = existing?.price || "";
+      $("console-status").value = existing?.status || "available";
+      $("console-emoji").value = existing?.emoji || "🎮";
+      $("console-desc").value = existing?.description || "";
+      $("modal").classList.add("open");
+    }
+    function closeModal() {
+      $("modal").classList.remove("open");
+      state.ui.editingId = null;
+    }
+    function updateNav() {
+      document.querySelectorAll(".nav [data-nav]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.nav === state.ui.screen);
+      });
+    }
+    function render() {
+      document.querySelectorAll(".screen").forEach((screen) => {
+        screen.classList.toggle("active", screen.id === `screen-${state.ui.screen}`);
+      });
+      updateNav();
+      renderHeroStats();
+      renderHomeKpis();
+      renderChips();
+      renderCatalog();
+      renderBookingScreen();
+      renderBookings();
+      renderProfile();
+      if (state.user?.role === "owner") renderAdmin();
+      $("header-status-text").textContent = state.user
+        ? `В системе: ${state.user.name} · ${state.user.role === "owner" ? "владелец" : "клиент"}`
+        : "Сайт готов к работе";
+    }
+    function setBookingFilter(filter) {
+      state.filters.booking = filter;
+      document.querySelectorAll("[data-booking-filter]").forEach((btn) => btn.classList.toggle("active", btn.dataset.bookingFilter === filter));
+      renderBookings();
     }
 
-    // ─── MODALS ──────────────────────────────────────
-    function openModal(id) {
-      const m = document.getElementById(id);
-      m.classList.remove('hidden');
-      m.classList.add('flex');
-    }
-    function closeModal(id) {
-      const m = document.getElementById(id);
-      m.classList.add('hidden');
-      m.classList.remove('flex');
-    }
-    document.querySelectorAll('[id^="modal-"]').forEach(m => {
-      m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+    document.addEventListener("click", (event) => {
+      const categoryBtn = event.target.closest("[data-category]");
+      if (categoryBtn) {
+        state.filters.category = categoryBtn.dataset.category;
+        render();
+        return;
+      }
+
+      const navBtn = event.target.closest("[data-nav]");
+      if (navBtn) {
+        const target = navBtn.dataset.nav;
+        if (target === "admin" && !state.user) {
+          toast("Сначала войдите", "Нужен аккаунт владельца или клиента.");
+          navigate("auth");
+          return;
+        }
+        if (target === "admin" && state.user?.role !== "owner") {
+          toast("Нет доступа", "Для этого раздела нужен аккаунт владельца.");
+          return;
+        }
+        navigate(target, true);
+        if (target === "admin") renderAdmin();
+        return;
+      }
+
+      const bookBtn = event.target.closest("[data-book]");
+      if (bookBtn) {
+        state.ui.bookingConsoleId = Number(bookBtn.dataset.book);
+        seedCurrentBooking();
+        navigate("booking", true);
+        renderBookingScreen();
+        return;
+      }
+
+      const copyBtn = event.target.closest("[data-copy]");
+      if (copyBtn) {
+        const item = state.consoles.find((consoleItem) => consoleItem.id === Number(copyBtn.dataset.copy));
+        if (item) {
+          toast(item.name, `${item.category} · ${formatMoney(item.price)} / сутки`);
+        }
+        return;
+      }
+
+      const filterBtn = event.target.closest("[data-booking-filter]");
+      if (filterBtn) {
+        setBookingFilter(filterBtn.dataset.bookingFilter);
+        return;
+      }
+
+      const repeatBtn = event.target.closest("[data-repeat-booking]");
+      if (repeatBtn) {
+        state.ui.bookingConsoleId = Number(repeatBtn.dataset.repeatBooking);
+        seedCurrentBooking();
+        navigate("booking", true);
+        return;
+      }
+
+      const closeBookingBtn = event.target.closest("[data-close-booking]");
+      if (closeBookingBtn) {
+        const id = Number(closeBookingBtn.dataset.closeBooking);
+        const booking = state.bookings.find((item) => item.id === id);
+        if (booking) {
+          booking.status = "done";
+          saveState();
+          render();
+          toast("Заказ закрыт", "Статус брони обновлён.");
+        }
+        return;
+      }
+
+      const tabBtn = event.target.closest("[data-admin-tab]");
+      if (tabBtn) {
+        adminTabSet(tabBtn.dataset.adminTab);
+        return;
+      }
+
+      const editBtn = event.target.closest("[data-edit-console]");
+      if (editBtn) {
+        openConsoleModal(Number(editBtn.dataset.editConsole));
+        return;
+      }
+
+      const orderStatusBtn = event.target.closest("[data-order-status]");
+      if (orderStatusBtn) {
+        const [id, status] = orderStatusBtn.dataset.orderStatus.split(":");
+        const order = state.bookings.find((item) => item.id === Number(id));
+        if (order) {
+          order.status = status;
+          saveState();
+          render();
+          toast("Статус обновлён", `Заказ переведён в состояние "${status}".`);
+        }
+        return;
+      }
     });
 
-    // ─── TOAST ───────────────────────────────────────
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      document.getElementById('toast-msg').textContent = msg;
-      t.classList.remove('hidden');
-      setTimeout(()=>t.classList.add('hidden'), 2500);
-    }
+    $("go-login-btn").addEventListener("click", () => navigate("auth"));
+    $("go-catalog-preview-btn").addEventListener("click", () => navigate("home"));
+    $("go-bookings-btn").addEventListener("click", () => {
+      if (!requireUser()) return;
+      navigate("bookings");
+    });
+    $("go-profile-btn").addEventListener("click", () => {
+      if (!requireUser()) return;
+      navigate("profile");
+    });
+    $("booking-back-btn").addEventListener("click", () => goBack());
+    $("profile-home-btn").addEventListener("click", () => navigate("home"));
+    $("profile-bookings-btn").addEventListener("click", () => {
+      if (!requireUser()) return;
+      navigate("bookings");
+    });
+    $("profile-admin-btn").addEventListener("click", () => {
+      if (!requireOwner()) return;
+      navigate("admin");
+    });
+    $("success-bookings-btn").addEventListener("click", () => navigate("bookings"));
+    $("success-home-btn").addEventListener("click", () => navigate("home"));
+    $("admin-back-btn").addEventListener("click", () => navigate("profile"));
+    $("admin-add-btn").addEventListener("click", () => {
+      if (!requireOwner()) return;
+      openConsoleModal();
+    });
+    $("modal-close-btn").addEventListener("click", closeModal);
+    $("modal").addEventListener("click", (event) => {
+      if (event.target === $("modal")) closeModal();
+    });
+    $("modal-remove-btn").addEventListener("click", () => {
+      const id = Number($("console-id").value);
+      if (!id) return;
+      state.consoles = state.consoles.filter((item) => item.id !== id);
+      state.bookings = state.bookings.filter((item) => item.consoleId !== id);
+      saveState();
+      closeModal();
+      render();
+      toast("Удалено", "Карточка консоли удалена из каталога.");
+    });
+    $("auth-reset-btn").addEventListener("click", () => {
+      $("auth-form").reset();
+    });
+    $("clear-search-btn").addEventListener("click", () => {
+      state.filters.search = "";
+      $("catalog-search").value = "";
+      render();
+    });
+    $("catalog-search").addEventListener("input", (event) => {
+      state.filters.search = event.target.value;
+      renderCatalog();
+    });
+    $("booking-console").addEventListener("change", (event) => {
+      state.ui.bookingConsoleId = Number(event.target.value);
+      renderBookingScreen();
+    });
+    $("booking-start").addEventListener("change", () => {
+      const minEnd = $("booking-start").value || todayValue(1);
+      $("booking-end").min = minEnd;
+      if ($("booking-end").value && $("booking-end").value < minEnd) {
+        $("booking-end").value = minEnd;
+      }
+      renderBookingScreen();
+    });
+    $("booking-end").addEventListener("change", renderBookingScreen);
+    $("booking-delivery").addEventListener("change", renderBookingScreen);
+    $("bookings-refresh-btn").addEventListener("click", renderBookings);
+    $("signout-btn").addEventListener("click", () => {
+      state.user = null;
+      saveState();
+      toast("Выход выполнен", "Профиль очищен, но каталог и брони остались.");
+      navigate("auth", false);
+    });
 
-    // ─── INIT ────────────────────────────────────────
-    function initIconFallbacks() {
-      const hasIconify = window.customElements && customElements.get('iconify-icon');
-      if (hasIconify) return;
-      const fallbackByName = {
-        gamepad: '▣',
-        bell: '!',
-        magnifer: '⌕',
-        tuning: '≡',
-        home: '⌂',
-        calendar: '□',
-        user: '●',
-        arrow: '‹',
-        check: '✓',
-        google: 'G',
-        shield: '◆',
-        money: '₸',
-        box: '▤',
-        add: '+',
-        list: '☑',
-        users: '●●',
-        heart: '♡',
-        settings: '⚙',
-        pen: '✎',
-        trash: '×',
-        vr: 'VR'
+    $("auth-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = $("auth-name").value.trim();
+      const phone = $("auth-phone").value.trim();
+      const role = $("auth-role").value;
+      const note = $("auth-note").value.trim();
+      if (!name || !phone) {
+        toast("Заполните поля", "Нужно указать имя и телефон.");
+        return;
+      }
+      state.user = { name, phone, role, note };
+      saveState();
+      toast("Профиль сохранён", role === "owner" ? "Открываю кабинет владельца." : "Открываю каталог.");
+      navigate(role === "owner" ? "admin" : "home", false);
+      if (role === "owner") {
+        adminTabSet("dashboard");
+      }
+    });
+
+    $("booking-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!requireUser()) return;
+      const item = currentConsole();
+      if (!item || item.status !== "available") {
+        toast("Консоль недоступна", "Выберите другой товар.");
+        return;
+      }
+      const start = $("booking-start").value;
+      const end = $("booking-end").value;
+      if (!start || !end) {
+        toast("Выберите даты", "Для бронирования нужны даты начала и конца.");
+        return;
+      }
+      if (new Date(`${end}T12:00:00`) < new Date(`${start}T12:00:00`)) {
+        toast("Проверьте даты", "Дата окончания не может быть раньше начала.");
+        return;
+      }
+      const totals = bookingTotal(item, start, end, $("booking-delivery").value);
+      const booking = {
+        id: Date.now(),
+        consoleId: item.id,
+        console: item.name,
+        category: item.category,
+        client: state.user.name,
+        phone: $("booking-contact").value.trim() || state.user.phone,
+        from: formatDate(start),
+        to: formatDate(end),
+        rawStart: start,
+        rawEnd: end,
+        days: totals.days,
+        deliveryMode: $("booking-delivery").value,
+        address: $("booking-address").value.trim(),
+        total: totals.total,
+        status: "pending",
       };
-      document.querySelectorAll('iconify-icon').forEach(icon => {
-        const name = icon.getAttribute('icon') || '';
-        const key = Object.keys(fallbackByName).find(k => name.includes(k));
-        icon.textContent = fallbackByName[key] || '•';
-        icon.classList.add('icon-fallback');
-      });
-    }
+      state.bookings.unshift(booking);
+      saveState();
+      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. Сумма заказа ${formatMoney(booking.total)}. Статус можно менять в кабинете владельца.`;
+      navigate("success", true);
+      render();
+      toast("Бронь создана", "Заказ сохранился в истории.");
+    });
+
+    $("console-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!requireOwner()) return;
+      const id = Number($("console-id").value || 0);
+      const item = {
+        id: id || Date.now(),
+        name: $("console-name").value.trim(),
+        category: $("console-category").value,
+        price: Number($("console-price").value),
+        status: $("console-status").value,
+        emoji: $("console-emoji").value.trim() || "🎮",
+        description: $("console-desc").value.trim(),
+      };
+      if (!item.name || !item.price) {
+        toast("Нужно заполнить", "Название и цена обязательны.");
+        return;
+      }
+      if (id) {
+        const index = state.consoles.findIndex((entry) => entry.id === id);
+        if (index >= 0) state.consoles[index] = item;
+      } else {
+        state.consoles.unshift(item);
+      }
+      saveState();
+      closeModal();
+      render();
+      toast("Сохранено", "Каталог обновлён.");
+    });
+
+    $("profile-edit-btn").addEventListener("click", () => {
+      navigate("auth");
+      if (state.user) {
+        $("auth-name").value = state.user.name;
+        $("auth-phone").value = state.user.phone;
+        $("auth-role").value = state.user.role;
+        $("auth-note").value = state.user.note || "";
+      }
+    });
 
     loadState();
-    setAuthRole('renter');
-    renderCatalog();
-    if (currentUser) {
-      goTo(currentUser.role === 'owner' ? 'admin' : 'home');
+    if (!state.consoles.length) state.consoles = cloneDefaults();
+    if (state.bookings.length) {
+      state.bookings = state.bookings.sort((a, b) => b.id - a.id);
     }
-    window.addEventListener('load', () => setTimeout(initIconFallbacks, 1200));
-    </script>
+    seedCurrentBooking();
+
+    if (state.user) {
+      $("auth-name").value = state.user.name || "";
+      $("auth-phone").value = state.user.phone || "";
+      $("auth-role").value = state.user.role || "renter";
+      $("auth-note").value = state.user.note || "";
+      navigate(state.user.role === "owner" ? "admin" : "home", false);
+      if (state.user.role === "owner") {
+        adminTabSet("dashboard");
+      }
+    } else {
+      render();
+    }
+
+    render();
+    setBookingFilter("all");
+    adminTabSet(state.ui.adminTab);
+    $("booking-start").min = todayValue(1);
+    $("booking-end").min = todayValue(1);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && $("modal").classList.contains("open")) closeModal();
+    });
+
+    setInterval(() => {
+      const openOrders = state.bookings.filter((item) => item.status === "active").length;
+      const pending = state.bookings.filter((item) => item.status === "pending").length;
+      $("header-status-text").textContent = state.user
+        ? `В системе: ${state.user.name} · ${state.user.role === "owner" ? "владелец" : "клиент"}`
+        : `Сайт готов к работе · ${openOrders} активных, ${pending} в ожидании`;
+    }, 10000);
+  </script>
 </body>
 </html>
