@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GameRent Uralsk</title>
   <meta name="description" content="Аренда игровых консолей в Уральске. Бронирование, доставка и кабинет владельца работают прямо в браузере." />
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
       --bg: #081019;
@@ -277,19 +276,6 @@
     }
     .btn.danger {
       background: linear-gradient(135deg, #ff6b6b, #ff8b5c);
-    }
-    .btn.google {
-      background: #ffffff;
-      color: #1f2937;
-      border: 1px solid rgba(255,255,255,0.22);
-      box-shadow: 0 18px 34px rgba(255, 255, 255, 0.08);
-    }
-    .google-login-box {
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
     }
 
     .stats {
@@ -931,12 +917,6 @@
           </div>
 
           <form id="auth-form" class="stack">
-            <div class="google-login-box" id="google-login-box">
-              <button class="btn google" type="button" id="google-login-btn">G Войти через Google</button>
-            </div>
-            <p class="meta" style="margin: -4px 0 0;">
-              Для настоящего Google-входа укажите Client ID в коде сайта.
-            </p>
             <div>
               <label for="auth-name">Имя</label>
               <input class="input" id="auth-name" name="name" placeholder="Например, Алихан" autocomplete="name" />
@@ -1377,7 +1357,6 @@
     ];
 
     const EXTRA_CONTROLLER_PRICE = 500;
-    const GOOGLE_CLIENT_ID = "PASTE_GOOGLE_CLIENT_ID_HERE";
 
     const state = {
       user: null,
@@ -1409,70 +1388,6 @@
       const date = new Date(`${value}T12:00:00`);
       return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short" }).format(date).replace(".", "");
     }
-    function hasGoogleClientId() {
-      return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes("PASTE_") && GOOGLE_CLIENT_ID.endsWith(".apps.googleusercontent.com");
-    }
-    function decodeGoogleCredential(credential) {
-      const payload = credential.split(".")[1];
-      const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-      const binary = atob(base64.padEnd(base64.length + (4 - base64.length % 4) % 4, "="));
-      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-      return JSON.parse(new TextDecoder().decode(bytes));
-    }
-    function handleGoogleCredential(response) {
-      try {
-        const profile = decodeGoogleCredential(response.credential);
-        const name = profile.name || profile.given_name || profile.email?.split("@")[0] || "Google user";
-        state.user = {
-          name,
-          email: profile.email || "",
-          phone: $("auth-phone").value.trim() || profile.email || "",
-          role: "renter",
-          note: $("auth-note").value.trim(),
-          provider: "google",
-          googleSub: profile.sub || "",
-          picture: profile.picture || "",
-        };
-        $("auth-name").value = state.user.name;
-        $("auth-phone").value = state.user.phone;
-        $("auth-role").value = state.user.role;
-        saveState();
-        toast("Вход через Google", `${state.user.name}, профиль клиента создан.`);
-        navigate("home", false);
-        render();
-      } catch {
-        toast("Google вход не выполнен", "Не удалось прочитать ответ Google. Попробуйте ещё раз.");
-      }
-    }
-    function initGoogleAuth() {
-      const box = $("google-login-box");
-      if (!box) return;
-      if (!hasGoogleClientId()) {
-        box.innerHTML = `<button class="btn google" type="button" id="google-login-btn">Укажите Google Client ID</button>`;
-        $("google-login-btn").addEventListener("click", () => {
-          toast("Нужен Client ID", "Вставьте Google OAuth Client ID в константу GOOGLE_CLIENT_ID.");
-        });
-        return;
-      }
-      if (!window.google?.accounts?.id) {
-        setTimeout(initGoogleAuth, 250);
-        return;
-      }
-      box.innerHTML = "";
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleCredential,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-      });
-      window.google.accounts.id.renderButton(box, {
-        theme: "outline",
-        size: "large",
-        shape: "pill",
-        text: "signin_with",
-        logo_alignment: "left",
-        width: 280,
-      });
     }
     function todayValue(offset = 0) {
       const d = new Date();
@@ -2207,7 +2122,6 @@
     }
 
     render();
-    initGoogleAuth();
     setBookingFilter("all");
     adminTabSet(state.ui.adminTab);
     $("booking-start").min = todayValue(1);
