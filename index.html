@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GameRent Uralsk</title>
   <meta name="description" content="Аренда игровых консолей в Уральске. Бронирование, доставка и кабинет владельца работают прямо в браузере." />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
       --bg: #081019;
@@ -276,6 +277,19 @@
     }
     .btn.danger {
       background: linear-gradient(135deg, #ff6b6b, #ff8b5c);
+    }
+    .btn.google {
+      background: #ffffff;
+      color: #1f2937;
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 18px 34px rgba(255, 255, 255, 0.08);
+    }
+    .google-login-box {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .stats {
@@ -599,7 +613,7 @@
 
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
       margin-top: 12px;
     }
@@ -651,6 +665,30 @@
       border: 1px solid rgba(255,255,255,0.08);
       color: var(--text);
       outline: none;
+    }
+
+    .check-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+    }
+    .check-card input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+    .check-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin-top: 2px;
     }
 
     .table-list {
@@ -893,6 +931,12 @@
           </div>
 
           <form id="auth-form" class="stack">
+            <div class="google-login-box" id="google-login-box">
+              <button class="btn google" type="button" id="google-login-btn">G Войти через Google</button>
+            </div>
+            <p class="meta" style="margin: -4px 0 0;">
+              Для настоящего Google-входа укажите Client ID в коде сайта.
+            </p>
             <div>
               <label for="auth-name">Имя</label>
               <input class="input" id="auth-name" name="name" placeholder="Например, Алихан" autocomplete="name" />
@@ -1015,6 +1059,10 @@
               <span>доставка по городу</span>
             </div>
             <div class="kpi">
+              <strong id="booking-controller-fee">0 ₸</strong>
+              <span>доп. джойстик</span>
+            </div>
+            <div class="kpi">
               <strong id="booking-total">0 ₸</strong>
               <span>итого к оплате</span>
             </div>
@@ -1046,6 +1094,15 @@
               <div>
                 <label for="booking-contact">Контакт</label>
                 <input id="booking-contact" class="input" placeholder="+7 7XX XXX XX XX" />
+              </div>
+              <div class="full">
+                <label class="check-card" for="booking-extra-controller">
+                  <input id="booking-extra-controller" type="checkbox" />
+                  <div>
+                    Дополнительный джойстик
+                    <span>+500 ₸ к заказу</span>
+                  </div>
+                </label>
               </div>
               <div class="full">
                 <label for="booking-address">Адрес / комментарий</label>
@@ -1319,6 +1376,9 @@
       }
     ];
 
+    const EXTRA_CONTROLLER_PRICE = 500;
+    const GOOGLE_CLIENT_ID = "PASTE_GOOGLE_CLIENT_ID_HERE";
+
     const state = {
       user: null,
       consoles: [],
@@ -1348,6 +1408,71 @@
       if (!value) return "—";
       const date = new Date(`${value}T12:00:00`);
       return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short" }).format(date).replace(".", "");
+    }
+    function hasGoogleClientId() {
+      return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes("PASTE_") && GOOGLE_CLIENT_ID.endsWith(".apps.googleusercontent.com");
+    }
+    function decodeGoogleCredential(credential) {
+      const payload = credential.split(".")[1];
+      const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+      const binary = atob(base64.padEnd(base64.length + (4 - base64.length % 4) % 4, "="));
+      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+    function handleGoogleCredential(response) {
+      try {
+        const profile = decodeGoogleCredential(response.credential);
+        const name = profile.name || profile.given_name || profile.email?.split("@")[0] || "Google user";
+        state.user = {
+          name,
+          email: profile.email || "",
+          phone: $("auth-phone").value.trim() || profile.email || "",
+          role: "renter",
+          note: $("auth-note").value.trim(),
+          provider: "google",
+          googleSub: profile.sub || "",
+          picture: profile.picture || "",
+        };
+        $("auth-name").value = state.user.name;
+        $("auth-phone").value = state.user.phone;
+        $("auth-role").value = state.user.role;
+        saveState();
+        toast("Вход через Google", `${state.user.name}, профиль клиента создан.`);
+        navigate("home", false);
+        render();
+      } catch {
+        toast("Google вход не выполнен", "Не удалось прочитать ответ Google. Попробуйте ещё раз.");
+      }
+    }
+    function initGoogleAuth() {
+      const box = $("google-login-box");
+      if (!box) return;
+      if (!hasGoogleClientId()) {
+        box.innerHTML = `<button class="btn google" type="button" id="google-login-btn">Укажите Google Client ID</button>`;
+        $("google-login-btn").addEventListener("click", () => {
+          toast("Нужен Client ID", "Вставьте Google OAuth Client ID в константу GOOGLE_CLIENT_ID.");
+        });
+        return;
+      }
+      if (!window.google?.accounts?.id) {
+        setTimeout(initGoogleAuth, 250);
+        return;
+      }
+      box.innerHTML = "";
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+      window.google.accounts.id.renderButton(box, {
+        theme: "outline",
+        size: "large",
+        shape: "pill",
+        text: "signin_with",
+        logo_alignment: "left",
+        width: 280,
+      });
     }
     function todayValue(offset = 0) {
       const d = new Date();
@@ -1399,6 +1524,7 @@
       $("booking-start").value = todayValue(1);
       $("booking-end").value = todayValue(2);
       $("booking-delivery").value = "pickup";
+      $("booking-extra-controller").checked = false;
       $("booking-contact").value = state.user?.phone || "";
       $("booking-address").value = state.user?.note || "";
     }
@@ -1443,14 +1569,17 @@
       }
       return true;
     }
-    function bookingTotal(consoleItem, start, end, deliveryMode) {
+    function bookingTotal(consoleItem, start, end, deliveryMode, extraController = false) {
       const days = dayDiff(start, end);
       const delivery = deliveryMode === "delivery" ? 1800 : 0;
+      const controller = extraController ? EXTRA_CONTROLLER_PRICE : 0;
+      const subtotal = days * consoleItem.price;
       return {
         days,
         delivery,
-        subtotal: days * consoleItem.price,
-        total: days * consoleItem.price + delivery,
+        controller,
+        subtotal,
+        total: subtotal + delivery + controller,
       };
     }
     function renderHeroStats() {
@@ -1547,9 +1676,11 @@
       const start = $("booking-start").value || todayValue(1);
       const end = $("booking-end").value || todayValue(2);
       const deliveryMode = $("booking-delivery").value || "pickup";
-      const totals = bookingTotal(item, start, end, deliveryMode);
+      const extraController = $("booking-extra-controller").checked;
+      const totals = bookingTotal(item, start, end, deliveryMode, extraController);
       $("booking-days").textContent = String(totals.days);
       $("booking-delivery-fee").textContent = formatMoney(totals.delivery);
+      $("booking-controller-fee").textContent = formatMoney(totals.controller);
       $("booking-total").textContent = formatMoney(totals.total);
     }
     function renderBookings() {
@@ -1575,6 +1706,7 @@
             </div>
             <h4>${esc(item.console)}</h4>
             <p>${esc(item.from)} – ${esc(item.to)} · ${esc(item.days)} дн. · ${formatMoney(item.total)}</p>
+            <p>${item.extraController ? `Доп. джойстик: да · ${formatMoney(item.controllerFee || EXTRA_CONTROLLER_PRICE)}` : "Доп. джойстик: нет"}</p>
             <p>${esc(item.deliveryMode === "delivery" ? "Доставка по адресу" : "Самовывоз")} · ${esc(item.address || "Адрес не указан")}</p>
           </div>
           <div>
@@ -1657,6 +1789,7 @@
           <div>
             <h4>${esc(item.console)} · ${esc(item.client)}</h4>
             <p>${esc(item.from)} – ${esc(item.to)} · ${formatMoney(item.total)}</p>
+            <p>${item.extraController ? `Доп. джойстик: да · ${formatMoney(item.controllerFee || EXTRA_CONTROLLER_PRICE)}` : "Доп. джойстик: нет"}</p>
           </div>
           <span class="status ${item.status}">${item.status}</span>
         </div>
@@ -1686,6 +1819,7 @@
           <div>
             <h4>${esc(item.console)} · ${esc(item.client)}</h4>
             <p>${esc(item.phone)} · ${esc(item.from)} – ${esc(item.to)} · ${formatMoney(item.total)}</p>
+            <p>${item.extraController ? `Доп. джойстик: да · ${formatMoney(item.controllerFee || EXTRA_CONTROLLER_PRICE)}` : "Доп. джойстик: нет"}</p>
             <p>${esc(item.deliveryMode === "delivery" ? "Доставка" : "Самовывоз")} · ${esc(item.address || "Без адреса")}</p>
           </div>
           <div>
@@ -1938,6 +2072,7 @@
     });
     $("booking-end").addEventListener("change", renderBookingScreen);
     $("booking-delivery").addEventListener("change", renderBookingScreen);
+    $("booking-extra-controller").addEventListener("change", renderBookingScreen);
     $("bookings-refresh-btn").addEventListener("click", renderBookings);
     $("signout-btn").addEventListener("click", () => {
       state.user = null;
@@ -1983,7 +2118,8 @@
         toast("Проверьте даты", "Дата окончания не может быть раньше начала.");
         return;
       }
-      const totals = bookingTotal(item, start, end, $("booking-delivery").value);
+      const extraController = $("booking-extra-controller").checked;
+      const totals = bookingTotal(item, start, end, $("booking-delivery").value, extraController);
       const booking = {
         id: Date.now(),
         consoleId: item.id,
@@ -1997,13 +2133,15 @@
         rawEnd: end,
         days: totals.days,
         deliveryMode: $("booking-delivery").value,
+        extraController,
+        controllerFee: totals.controller,
         address: $("booking-address").value.trim(),
         total: totals.total,
         status: "pending",
       };
       state.bookings.unshift(booking);
       saveState();
-      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. Сумма заказа ${formatMoney(booking.total)}. Статус можно менять в кабинете владельца.`;
+      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. ${booking.extraController ? "Дополнительный джойстик добавлен за 500 ₸. " : ""}Сумма заказа ${formatMoney(booking.total)}. Статус можно менять в кабинете владельца.`;
       navigate("success", true);
       render();
       toast("Бронь создана", "Заказ сохранился в истории.");
@@ -2069,6 +2207,7 @@
     }
 
     render();
+    initGoogleAuth();
     setBookingFilter("all");
     adminTabSet(state.ui.adminTab);
     $("booking-start").min = todayValue(1);
