@@ -726,6 +726,77 @@
       margin-top: 12px;
     }
 
+    .chat-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: rgba(110, 231, 255, 0.16);
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .chat-box {
+      display: grid;
+      gap: 12px;
+      max-height: min(52vh, 420px);
+      overflow: auto;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .chat-message {
+      max-width: 82%;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .chat-message.owner {
+      justify-self: start;
+      border-top-left-radius: 8px;
+    }
+
+    .chat-message.renter {
+      justify-self: end;
+      border-top-right-radius: 8px;
+      background: linear-gradient(135deg, rgba(110,231,255,0.2), rgba(139,92,246,0.18));
+      border-color: rgba(110,231,255,0.18);
+    }
+
+    .chat-message strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .chat-message p {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .chat-message time {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted-2);
+      font-size: 0.74rem;
+    }
+
+    .chat-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
     .status {
       display: inline-flex;
       align-items: center;
@@ -868,6 +939,12 @@
       }
       .order-actions {
         justify-content: start;
+      }
+      .chat-form {
+        grid-template-columns: 1fr;
+      }
+      .chat-message {
+        max-width: 100%;
       }
     }
   </style>
@@ -1292,6 +1369,26 @@
     </div>
   </div>
 
+  <div id="chat-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="chat-title">
+    <div class="modal">
+      <div class="section-head" style="margin-top: 0;">
+        <div>
+          <h3 id="chat-title" class="section-title">Чат по аренде</h3>
+          <p id="chat-subtitle" class="section-subtitle">Сообщения между владельцем и арендатором.</p>
+        </div>
+        <button class="btn secondary" type="button" id="chat-close-btn">Закрыть</button>
+      </div>
+      <div id="chat-messages" class="chat-box"></div>
+      <form id="chat-form" class="chat-form" style="margin-top: 14px;">
+        <div>
+          <label for="chat-input">Сообщение</label>
+          <textarea id="chat-input" placeholder="Напишите вопрос, адрес, время доставки или ответ клиенту."></textarea>
+        </div>
+        <button class="btn" type="submit">Отправить</button>
+      </form>
+    </div>
+  </div>
+
   <div class="toast" id="toast">
     <strong id="toast-title">Готово</strong>
     <small id="toast-text">--</small>
@@ -1382,7 +1479,7 @@
       consoles: [],
       bookings: [],
       filters: { category: "all", search: "", booking: "all" },
-      ui: { screen: "auth", history: [], adminTab: "dashboard", editingId: null, bookingConsoleId: 1 },
+      ui: { screen: "auth", history: [], adminTab: "dashboard", editingId: null, bookingConsoleId: 1, chatBookingId: null },
     };
 
     const refs = {};
@@ -1406,6 +1503,21 @@
       if (!value) return "—";
       const date = new Date(`${value}T12:00:00`);
       return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short" }).format(date).replace(".", "");
+    }
+    function formatDateTime(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "только что";
+      return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(date).replace(".", "");
+    }
+    function roleLabel(role) {
+      return role === "owner" ? "Владелец" : "Арендатор";
+    }
+    function bookingChat(booking) {
+      if (!Array.isArray(booking.messages)) booking.messages = [];
+      return booking.messages;
+    }
+    function chatCount(booking) {
+      return bookingChat(booking).length;
     }
     function hasGoogleClientId() {
       return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes("PASTE_") && GOOGLE_CLIENT_ID.endsWith(".apps.googleusercontent.com");
@@ -1510,6 +1622,9 @@
         state.user = parsed.user ?? null;
         state.consoles = Array.isArray(parsed.consoles) && parsed.consoles.length ? parsed.consoles : cloneDefaults();
         state.bookings = Array.isArray(parsed.bookings) ? parsed.bookings : [];
+        state.bookings.forEach((booking) => {
+          if (!Array.isArray(booking.messages)) booking.messages = [];
+        });
       } catch {
         state.consoles = cloneDefaults();
         state.bookings = [];
@@ -1684,7 +1799,10 @@
     function renderBookings() {
       const filter = state.filters.booking;
       const list = $("bookings-list");
-      const items = state.bookings.filter((item) => filter === "all" || item.status === filter);
+      const visibleBookings = state.user?.role === "owner"
+        ? state.bookings
+        : state.bookings.filter((item) => !state.user || item.phone === state.user.phone);
+      const items = visibleBookings.filter((item) => filter === "all" || item.status === filter);
       $("bookings-summary").textContent = `${items.length} заказов в фильтре`;
       if (!items.length) {
         list.innerHTML = `
@@ -1708,8 +1826,9 @@
             <p>${esc(item.deliveryMode === "delivery" ? "Доставка по адресу" : "Самовывоз")} · ${esc(item.address || "Адрес не указан")}</p>
           </div>
           <div>
-            <p class="meta" style="text-align:right; margin-bottom: 8px;">${esc(item.name)}<br>${esc(item.phone)}</p>
+            <p class="meta" style="text-align:right; margin-bottom: 8px;">${esc(item.client)}<br>${esc(item.phone)}</p>
             <div class="order-actions">
+              <button type="button" class="btn secondary" data-open-chat="${item.id}">Чат <span class="chat-count">${chatCount(item)}</span></button>
               <button type="button" class="btn secondary" data-repeat-booking="${item.consoleId}">Повторить</button>
               ${item.status !== "done" ? `<button type="button" class="btn" data-close-booking="${item.id}">Закрыть</button>` : ""}
             </div>
@@ -1825,6 +1944,7 @@
               <span class="status ${item.status}">${item.status}</span>
             </div>
             <div class="order-actions">
+              <button type="button" class="btn secondary" data-open-chat="${item.id}">Чат <span class="chat-count">${chatCount(item)}</span></button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:pending">Ожидание</button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:active">Активна</button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:done">Закрыта</button>
@@ -1878,6 +1998,62 @@
     function closeModal() {
       $("modal").classList.remove("open");
       state.ui.editingId = null;
+    }
+    function openChat(id) {
+      const booking = state.bookings.find((item) => item.id === id);
+      if (!booking) {
+        toast("Чат не найден", "Бронь могла быть удалена.");
+        return;
+      }
+      if (state.user?.role !== "owner" && booking.phone !== state.user?.phone) {
+        toast("Нет доступа", "Этот чат доступен только владельцу и арендатору по заказу.");
+        return;
+      }
+      state.ui.chatBookingId = id;
+      $("chat-title").textContent = `Чат: ${booking.console}`;
+      $("chat-subtitle").textContent = `${booking.client} · ${booking.phone} · ${booking.from} – ${booking.to}`;
+      $("chat-input").value = "";
+      $("chat-modal").classList.add("open");
+      renderChat();
+      setTimeout(() => $("chat-input").focus(), 80);
+    }
+    function closeChat() {
+      $("chat-modal").classList.remove("open");
+      state.ui.chatBookingId = null;
+    }
+    function renderChat() {
+      const booking = state.bookings.find((item) => item.id === state.ui.chatBookingId);
+      if (!booking) return;
+      const messages = bookingChat(booking);
+      $("chat-messages").innerHTML = messages.length ? messages.map((message) => `
+        <div class="chat-message ${message.role === "owner" ? "owner" : "renter"}">
+          <strong>${esc(message.author)} · ${roleLabel(message.role)}</strong>
+          <p>${esc(message.text)}</p>
+          <time>${formatDateTime(message.createdAt)}</time>
+        </div>
+      `).join("") : `
+        <div class="card" style="box-shadow:none;">
+          <h4 style="margin: 0 0 8px;">Чат пока пустой</h4>
+          <p class="meta" style="margin:0;">Напишите первое сообщение владельцу или арендатору по этой аренде.</p>
+        </div>
+      `;
+      $("chat-messages").scrollTop = $("chat-messages").scrollHeight;
+    }
+    function sendChatMessage(text) {
+      const booking = state.bookings.find((item) => item.id === state.ui.chatBookingId);
+      if (!booking || !state.user) return;
+      const message = {
+        id: Date.now(),
+        role: state.user.role === "owner" ? "owner" : "renter",
+        author: state.user.name || (state.user.role === "owner" ? "Владелец" : booking.client),
+        text,
+        createdAt: new Date().toISOString(),
+      };
+      bookingChat(booking).push(message);
+      saveState();
+      renderChat();
+      renderBookings();
+      if (state.user.role === "owner") renderAdmin();
     }
     function updateNav() {
       document.querySelectorAll(".nav [data-nav]").forEach((btn) => {
@@ -1964,6 +2140,13 @@
         return;
       }
 
+      const chatBtn = event.target.closest("[data-open-chat]");
+      if (chatBtn) {
+        if (!requireUser()) return;
+        openChat(Number(chatBtn.dataset.openChat));
+        return;
+      }
+
       const closeBookingBtn = event.target.closest("[data-close-booking]");
       if (closeBookingBtn) {
         const id = Number(closeBookingBtn.dataset.closeBooking);
@@ -2033,6 +2216,21 @@
     $("modal-close-btn").addEventListener("click", closeModal);
     $("modal").addEventListener("click", (event) => {
       if (event.target === $("modal")) closeModal();
+    });
+    $("chat-close-btn").addEventListener("click", closeChat);
+    $("chat-modal").addEventListener("click", (event) => {
+      if (event.target === $("chat-modal")) closeChat();
+    });
+    $("chat-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!requireUser()) return;
+      const text = $("chat-input").value.trim();
+      if (!text) {
+        toast("Сообщение пустое", "Напишите текст перед отправкой.");
+        return;
+      }
+      sendChatMessage(text);
+      $("chat-input").value = "";
     });
     $("modal-remove-btn").addEventListener("click", () => {
       const id = Number($("console-id").value);
@@ -2136,10 +2334,19 @@
         address: $("booking-address").value.trim(),
         total: totals.total,
         status: "pending",
+        messages: [
+          {
+            id: Date.now() + 1,
+            role: "renter",
+            author: state.user.name,
+            text: `Здравствуйте! Я забронировал ${item.name} на ${totals.days} дн. ${$("booking-delivery").value === "delivery" ? "Нужна доставка." : "Планирую самовывоз."}`,
+            createdAt: new Date().toISOString(),
+          },
+        ],
       };
       state.bookings.unshift(booking);
       saveState();
-      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. ${booking.extraController ? "Дополнительный джойстик добавлен за 500 ₸. " : ""}Сумма заказа ${formatMoney(booking.total)}. Статус можно менять в кабинете владельца.`;
+      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. ${booking.extraController ? "Дополнительный джойстик добавлен за 500 ₸. " : ""}Сумма заказа ${formatMoney(booking.total)}. В разделе броней уже доступен чат с владельцем.`;
       navigate("success", true);
       render();
       toast("Бронь создана", "Заказ сохранился в истории.");
@@ -2212,6 +2419,7 @@
     $("booking-end").min = todayValue(1);
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && $("modal").classList.contains("open")) closeModal();
+      if (event.key === "Escape" && $("chat-modal").classList.contains("open")) closeChat();
     });
 
     setInterval(() => {
