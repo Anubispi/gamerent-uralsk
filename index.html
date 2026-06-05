@@ -6,6 +6,7 @@
   <title>GameRent Uralsk</title>
   <meta name="description" content="Аренда игровых консолей в Уральске. Бронирование, доставка и кабинет владельца работают прямо в браузере." />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     :root {
       --bg: #081019;
@@ -1738,6 +1739,28 @@
         width: 280,
       });
     }
+    async function verifyIinWithPhoto(iin, photoFile) {
+      try {
+        toast("ИИН тексерілуде…", "Фотодан ИИН оқылуда, күте тұрыңыз (5-10 сек).");
+        const imageUrl = URL.createObjectURL(photoFile);
+        const worker = await Tesseract.createWorker("kaz+rus+eng");
+        const result = await worker.recognize(imageUrl);
+        await worker.terminate();
+        URL.revokeObjectURL(imageUrl);
+        const text = result.data.text || "";
+        const digits = text.replace(/\D/g, "");
+        const matches = text.match(/\d{12}/g) || [];
+        if (matches.length === 0) {
+          const sub12 = digits.match(/\d{12}/g) || [];
+          if (sub12.length === 0) return null;
+          return sub12.some(m => m === iin);
+        }
+        return matches.some(m => m === iin);
+      } catch(e) {
+        console.error("Tesseract error:", e);
+        return null;
+      }
+    }
     function todayValue(offset = 0) {
       const d = new Date();
       d.setDate(d.getDate() + offset);
@@ -2549,6 +2572,18 @@
       };
       // Supabase Storage-ке фото жүктеу + bookings-ке сақтау
       (async () => {
+        const photoFile = $("booking-id-photo").files[0];
+        if (photoFile) {
+          const iinMatch = await verifyIinWithPhoto(iin, photoFile);
+          if (iinMatch === false) {
+            toast("ИИН сәйкес емес ✗", "Удостоверениедегі ИИН енгізілгенмен бірдей емес. Бронь тоқтатылды.");
+            return;
+          }
+          if (iinMatch === null) {
+            toast("Фото оқылмады", "Фото сапасын тексеріңіз: жарық, анық болуы керек.");
+            return;
+          }
+        }
         toast("Сохраняется…", "Загружаем фото и сохраняем бронь.");
         let photoUrl = "";
         const photoFile = $("booking-id-photo").files[0];
