@@ -896,6 +896,24 @@
     .contract-note {
       font-size: 0.74rem;
     }
+    .contract-agree-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.25);
+    }
+    .contract-agree-box strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+    .contract-agree-box span {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
     .contract-paper {
       padding: 22px;
       border-radius: 18px;
@@ -1193,6 +1211,23 @@
               <div class="full">
                 <label for="booking-address">Адрес / комментарий</label>
                 <textarea id="booking-address" placeholder="Укажите адрес доставки или комментарий для самовывоза."></textarea>
+              </div>
+              <!-- Договор -->
+              <div class="full">
+                <div class="contract-agree-box">
+                  <div class="contract-agree-text">
+                    <strong>Договор аренды</strong>
+                    <span>Перед бронированием ознакомьтесь с условиями договора</span>
+                  </div>
+                  <button class="btn secondary" type="button" id="booking-view-contract-btn">Читать договор</button>
+                </div>
+                <label class="check-card" for="booking-agree" style="margin-top:10px; border-color: rgba(255,255,255,0.15);">
+                  <input id="booking-agree" type="checkbox" required />
+                  <div>
+                    Я ознакомился с договором аренды и согласен с условиями
+                    <span>Обязательно для оформления брони</span>
+                  </div>
+                </label>
               </div>
             </div>
             <div class="hero-actions">
@@ -1703,6 +1738,7 @@
       $("booking-end").value = todayValue(2);
       $("booking-delivery").value = "pickup";
       $("booking-extra-controller").checked = false;
+      $("booking-agree").checked = false;
       $("booking-contact").value = state.user?.phone || "";
       $("booking-address").value = state.user?.note || "";
     }
@@ -2194,6 +2230,38 @@
       navigate("profile");
     });
     $("booking-back-btn").addEventListener("click", () => goBack());
+
+    $("booking-view-contract-btn").addEventListener("click", () => {
+      const con = currentConsole();
+      const user = state.user || {};
+      const today = new Date().toLocaleDateString("ru-RU");
+      const start = $("booking-start").value;
+      const end = $("booking-end").value;
+      const from = start ? new Date(start).toLocaleDateString("ru-RU") : "__.__.____";
+      const to = end ? new Date(end).toLocaleDateString("ru-RU") : "__.__.____";
+      const days = (start && end) ? Math.max(1, Math.round((new Date(end) - new Date(start)) / 86400000)) : 0;
+      const price = con ? con.price * (days || 1) : 0;
+      $("contract-content").innerHTML = `
+        <h4>ДОГОВОР АРЕНДЫ ИГРОВОЙ КОНСОЛИ</h4>
+        <div class="contract-row"><span class="contract-label">Дата договора</span><span>${today}</span></div>
+        <div class="contract-row"><span class="contract-label">Арендодатель</span><span>GameRent Uralsk, г. Уральск</span></div>
+        <div class="contract-row"><span class="contract-label">Арендатор</span><span>${user.name || "—"}</span></div>
+        <div class="contract-row"><span class="contract-label">Предмет аренды</span><span>${con ? con.name : "—"}</span></div>
+        <div class="contract-row"><span class="contract-label">Период аренды</span><span>${from} — ${to}${days ? " (" + days + " дн.)" : ""}</span></div>
+        <div class="contract-row"><span class="contract-label">Сумма аренды</span><span>${MONEY.format(price)} ₸</span></div>
+        <div class="contract-section"><strong>Условия договора:</strong><ol>
+          <li>Арендатор обязуется вернуть консоль в надлежащем состоянии в указанный срок.</li>
+          <li>При повреждении оборудования арендатор возмещает полную стоимость ремонта.</li>
+          <li>Оплата производится до выдачи консоли на руки.</li>
+          <li>Продление срока аренды согласовывается с арендодателем заранее.</li>
+          <li>Настоящий договор составлен в двух экземплярах, имеющих равную юридическую силу.</li>
+        </ol></div>
+        <div class="contract-signatures">
+          <div><div class="signature-line">Арендодатель: _______________</div></div>
+          <div><div class="signature-line">Арендатор: _______________</div></div>
+        </div>`;
+      $("contract-modal").classList.add("open");
+    });
     $("profile-home-btn").addEventListener("click", () => navigate("home"));
     $("profile-bookings-btn").addEventListener("click", () => {
       if (!requireUser()) return;
@@ -2323,6 +2391,12 @@
     $("booking-form").addEventListener("submit", (event) => {
       event.preventDefault();
       if (!requireUser()) return;
+      if (!$("booking-agree").checked) {
+        toast("Договор не принят", "Ознакомьтесь с договором и поставьте галочку.");
+        $("booking-agree").closest(".check-card").style.borderColor = "#ef4444";
+        setTimeout(() => $("booking-agree").closest(".check-card").style.borderColor = "", 2000);
+        return;
+      }
       const item = currentConsole();
       if (!item || item.status !== "available") {
         toast("Консоль недоступна", "Выберите другой товар.");
