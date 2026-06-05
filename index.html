@@ -896,6 +896,57 @@
     .contract-note {
       font-size: 0.74rem;
     }
+    .id-verify-box {
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .id-verify-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .id-verify-icon { font-size: 1.8rem; line-height: 1; }
+    .id-verify-header strong { display: block; margin-bottom: 3px; }
+    .id-verify-header span { font-size: 0.82rem; color: var(--muted); }
+    .id-verify-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .id-field-group label:first-child {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .photo-upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+      border-radius: 12px;
+      border: 2px dashed rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      text-align: center;
+      padding: 12px;
+      gap: 6px;
+    }
+    .photo-upload-label:hover { border-color: var(--accent); background: rgba(99,102,241,0.07); }
+    .photo-upload-label.has-photo { border-style: solid; border-color: var(--accent); }
+    .photo-icon { font-size: 2rem; display: block; }
+    .photo-upload-label span { font-size: 0.82rem; color: var(--muted); }
+    .photo-upload-label small { font-size: 0.74rem; color: var(--muted-2); }
+    @media (max-width: 600px) {
+      .id-verify-fields { grid-template-columns: 1fr; }
+    }
     .contract-agree-box {
       display: flex;
       align-items: center;
@@ -1211,6 +1262,36 @@
               <div class="full">
                 <label for="booking-address">Адрес / комментарий</label>
                 <textarea id="booking-address" placeholder="Укажите адрес доставки или комментарий для самовывоза."></textarea>
+              </div>
+              <!-- Удостоверение және ИИН -->
+              <div class="full">
+                <div class="id-verify-box">
+                  <div class="id-verify-header">
+                    <span class="id-verify-icon">🪪</span>
+                    <div>
+                      <strong>Верификация личности</strong>
+                      <span>Фото удостоверения и ИИН обязательны для подписания договора</span>
+                    </div>
+                  </div>
+                  <div class="id-verify-fields">
+                    <div class="id-field-group">
+                      <label for="booking-iin">ИИН (12 цифр)</label>
+                      <input id="booking-iin" class="input" type="text" inputmode="numeric" maxlength="12" placeholder="000000000000" pattern="\d{12}" />
+                    </div>
+                    <div class="id-field-group">
+                      <label>Фото удостоверения личности</label>
+                      <label class="photo-upload-label" id="photo-upload-label" for="booking-id-photo">
+                        <div id="photo-placeholder">
+                          <span class="photo-icon">📷</span>
+                          <span>Нажмите чтобы загрузить фото</span>
+                          <small>Лицевая сторона удостоверения</small>
+                        </div>
+                        <img id="photo-preview" src="" alt="Предпросмотр" style="display:none; width:100%; border-radius:10px; max-height:180px; object-fit:cover;" />
+                      </label>
+                      <input id="booking-id-photo" type="file" accept="image/*" capture="environment" style="display:none;" />
+                    </div>
+                  </div>
+                </div>
               </div>
               <!-- Договор -->
               <div class="full">
@@ -1739,6 +1820,11 @@
       $("booking-delivery").value = "pickup";
       $("booking-extra-controller").checked = false;
       $("booking-agree").checked = false;
+      $("booking-iin").value = "";
+      $("booking-id-photo").value = "";
+      $("photo-preview").style.display = "none";
+      $("photo-placeholder").style.display = "";
+      $("photo-upload-label").classList.remove("has-photo");
       $("booking-contact").value = state.user?.phone || "";
       $("booking-address").value = state.user?.note || "";
     }
@@ -2231,6 +2317,20 @@
     });
     $("booking-back-btn").addEventListener("click", () => goBack());
 
+    // Фото предпросмотр
+    $("booking-id-photo").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        $("photo-preview").src = ev.target.result;
+        $("photo-preview").style.display = "block";
+        $("photo-placeholder").style.display = "none";
+        $("photo-upload-label").classList.add("has-photo");
+      };
+      reader.readAsDataURL(file);
+    });
+
     $("booking-view-contract-btn").addEventListener("click", () => {
       const con = currentConsole();
       const user = state.user || {};
@@ -2397,6 +2497,19 @@
         setTimeout(() => $("booking-agree").closest(".check-card").style.borderColor = "", 2000);
         return;
       }
+      const iin = $("booking-iin").value.trim();
+      if (!/^\d{12}$/.test(iin)) {
+        toast("Неверный ИИН", "ИИН должен содержать ровно 12 цифр.");
+        $("booking-iin").style.borderColor = "#ef4444";
+        setTimeout(() => $("booking-iin").style.borderColor = "", 2000);
+        return;
+      }
+      if (!$("booking-id-photo").files[0]) {
+        toast("Нет фото", "Загрузите фото удостоверения личности.");
+        $("photo-upload-label").style.borderColor = "#ef4444";
+        setTimeout(() => $("photo-upload-label").style.borderColor = "", 2000);
+        return;
+      }
       const item = currentConsole();
       if (!item || item.status !== "available") {
         toast("Консоль недоступна", "Выберите другой товар.");
@@ -2430,11 +2543,12 @@
         extraController,
         controllerFee: totals.controller,
         address: $("booking-address").value.trim(),
+        iin,
         total: totals.total,
         status: "pending",
       };
       // Supabase-ке бронды сақтаймыз
-      const noteData = JSON.stringify({ client: booking.client, phone: booking.phone, deliveryMode: booking.deliveryMode, extraController: booking.extraController, address: booking.address });
+      const noteData = JSON.stringify({ client: booking.client, phone: booking.phone, deliveryMode: booking.deliveryMode, extraController: booking.extraController, address: booking.address, iin: booking.iin });
       DB.insert("bookings", { console_id: booking.consoleId, from_date: booking.rawStart, to_date: booking.rawEnd, status: "pending", total: booking.total, note: noteData }).then(row => {
         if (row && row.id) { booking.id = row.id; state.ui.chatBookingId = row.id; }
       }).catch(() => {});
