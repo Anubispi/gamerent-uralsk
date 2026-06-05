@@ -2586,7 +2586,6 @@
         }
         toast("Сохраняется…", "Загружаем фото и сохраняем бронь.");
         let photoUrl = "";
-        const photoFile = $("booking-id-photo").files[0];
         if (photoFile) {
           try {
             const ext = photoFile.name.split(".").pop() || "jpg";
