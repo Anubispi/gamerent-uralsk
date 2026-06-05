@@ -2547,18 +2547,64 @@
         total: totals.total,
         status: "pending",
       };
-      // Supabase-ке бронды сақтаймыз
-      const noteData = JSON.stringify({ client: booking.client, phone: booking.phone, deliveryMode: booking.deliveryMode, extraController: booking.extraController, address: booking.address, iin: booking.iin });
-      DB.insert("bookings", { console_id: booking.consoleId, from_date: booking.rawStart, to_date: booking.rawEnd, status: "pending", total: booking.total, note: noteData }).then(row => {
+      // Supabase Storage-ке фото жүктеу + bookings-ке сақтау
+      (async () => {
+        toast("Сохраняется…", "Загружаем фото и сохраняем бронь.");
+        let photoUrl = "";
+        const photoFile = $("booking-id-photo").files[0];
+        if (photoFile) {
+          try {
+            const ext = photoFile.name.split(".").pop() || "jpg";
+            const fileName = `${Date.now()}_${iin}.${ext}`;
+            const uploadRes = await fetch(
+              `${SUPABASE_URL}/storage/v1/object/id-photos/${fileName}`,
+              {
+                method: "POST",
+                headers: {
+                  apikey: SUPABASE_KEY,
+                  Authorization: `Bearer ${SUPABASE_KEY}`,
+                  "Content-Type": photoFile.type || "image/jpeg",
+                },
+                body: photoFile,
+              }
+            );
+            if (uploadRes.ok) {
+              photoUrl = `${SUPABASE_URL}/storage/v1/object/public/id-photos/${fileName}`;
+            } else {
+              const err = await uploadRes.json().catch(() => ({}));
+              console.error("Photo upload error:", err);
+              toast("Фото жүктелмеді", "Бірақ бронь сақталады.");
+            }
+          } catch(e) {
+            console.error("Photo upload exception:", e);
+          }
+        }
+        const noteData = JSON.stringify({
+          client: booking.client,
+          phone: booking.phone,
+          deliveryMode: booking.deliveryMode,
+          extraController: booking.extraController,
+          address: booking.address,
+          iin: booking.iin,
+          photoUrl,
+        });
+        const row = await DB.insert("bookings", {
+          console_id: booking.consoleId,
+          from_date: booking.rawStart,
+          to_date: booking.rawEnd,
+          status: "pending",
+          total: booking.total,
+          note: noteData,
+        }).catch(() => null);
         if (row && row.id) { booking.id = row.id; state.ui.chatBookingId = row.id; }
-      }).catch(() => {});
-      state.bookings.unshift(booking);
-      state.ui.chatBookingId = booking.id;
-      saveState();
-      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. ${booking.extraController ? "Дополнительный джойстик добавлен за 500 ₸. " : ""}Сумма заказа ${formatMoney(booking.total)}. Статус можно менять в кабинете владельца.`;
-      navigate("success", true);
-      render();
-      toast("Бронь создана", "Заказ сохранён в Supabase.");
+        state.bookings.unshift(booking);
+        state.ui.chatBookingId = booking.id;
+        $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. ${booking.extraController ? "Дополнительный джойстик добавлен за 500 ₸. " : ""}Сумма заказа ${formatMoney(booking.total)}. Статус можно менять в кабинете владельца.`;
+        navigate("success", true);
+        render();
+        toast("Бронь создана", photoUrl ? "Фото и данные сохранены в Supabase." : "Заказ сохранён в Supabase.");
+      })();
+      return; // async блок өз бетімен жұмыс істейді
     });
 
     $("console-form").addEventListener("submit", (event) => {
