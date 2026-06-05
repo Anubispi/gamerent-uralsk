@@ -2585,8 +2585,6 @@
           deliveryMode: booking.deliveryMode,
           extraController: booking.extraController,
           address: booking.address,
-          iin: booking.iin,
-          photoUrl,
         });
         const row = await DB.insert("bookings", {
           console_id: booking.consoleId,
@@ -2594,6 +2592,8 @@
           to_date: booking.rawEnd,
           status: "pending",
           total: booking.total,
+          iin: booking.iin,
+          photo_url: photoUrl,
           note: noteData,
         }).catch(() => null);
         if (row && row.id) { booking.id = row.id; state.ui.chatBookingId = row.id; }
