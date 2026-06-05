@@ -726,77 +726,6 @@
       margin-top: 12px;
     }
 
-    .chat-count {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 22px;
-      height: 22px;
-      padding: 0 7px;
-      border-radius: 999px;
-      background: rgba(110, 231, 255, 0.16);
-      color: var(--accent);
-      font-size: 0.76rem;
-      font-weight: 800;
-    }
-
-    .chat-box {
-      display: grid;
-      gap: 12px;
-      max-height: min(52vh, 420px);
-      overflow: auto;
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.035);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .chat-message {
-      max-width: 82%;
-      padding: 12px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .chat-message.owner {
-      justify-self: start;
-      border-top-left-radius: 8px;
-    }
-
-    .chat-message.renter {
-      justify-self: end;
-      border-top-right-radius: 8px;
-      background: linear-gradient(135deg, rgba(110,231,255,0.2), rgba(139,92,246,0.18));
-      border-color: rgba(110,231,255,0.18);
-    }
-
-    .chat-message strong {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .chat-message p {
-      margin: 0;
-      line-height: 1.5;
-    }
-
-    .chat-message time {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted-2);
-      font-size: 0.74rem;
-    }
-
-    .chat-form {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: end;
-    }
-
     .status {
       display: inline-flex;
       align-items: center;
@@ -940,11 +869,93 @@
       .order-actions {
         justify-content: start;
       }
-      .chat-form {
-        grid-template-columns: 1fr;
-      }
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 24px;
+      width: min(100%, 680px);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .contract-note {
+      font-size: 0.74rem;
+    }
+    .contract-paper {
+      padding: 22px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.96);
+      color: #111827;
+      line-height: 1.55;
+    }
+    .contract-paper h4,
+    .contract-paper p {
+      margin: 0;
+    }
+    .contract-paper h4 {
+      font-size: 1.35rem;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .contract-paper .contract-row {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(17, 24, 39, 0.14);
+    }
+    .contract-paper .contract-label {
+      color: #4b5563;
+      font-weight: 700;
+    }
+    .contract-paper .contract-section {
+      margin-top: 16px;
+    }
+    .contract-paper ol {
+      margin: 8px 0 0;
+      padding-left: 22px;
+    }
+    .contract-paper li {
+      margin-bottom: 7px;
+    }
+    .contract-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .signature-line {
+      border-top: 1px solid #111827;
+      padding-top: 8px;
+      color: #4b5563;
+      font-size: 0.88rem;
+    }
+    .chat-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+    }
+    @media (max-width: 600px) {
       .chat-message {
         max-width: 100%;
+      }
+      .contract-paper .contract-row,
+      .contract-signatures {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -1299,6 +1310,7 @@
             </p>
           </div>
           <div class="hero-actions" style="margin: 0;">
+            <button class="btn" type="button" id="success-contract-btn">Сделать договор</button>
             <button class="btn" type="button" id="success-bookings-btn">Перейти к моим броням</button>
             <button class="btn secondary" type="button" id="success-home-btn">Вернуться в каталог</button>
           </div>
@@ -1369,23 +1381,20 @@
     </div>
   </div>
 
-  <div id="chat-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="chat-title">
+  <div id="contract-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="contract-title">
     <div class="modal">
       <div class="section-head" style="margin-top: 0;">
         <div>
-          <h3 id="chat-title" class="section-title">Чат по аренде</h3>
-          <p id="chat-subtitle" class="section-subtitle">Сообщения между владельцем и арендатором.</p>
+          <h3 id="contract-title" class="section-title">Договор аренды</h3>
+          <p id="contract-subtitle" class="section-subtitle contract-note">Документ можно распечатать и подписать при передаче консоли.</p>
         </div>
-        <button class="btn secondary" type="button" id="chat-close-btn">Закрыть</button>
+        <button class="btn secondary" type="button" id="contract-close-btn">Закрыть</button>
       </div>
-      <div id="chat-messages" class="chat-box"></div>
-      <form id="chat-form" class="chat-form" style="margin-top: 14px;">
-        <div>
-          <label for="chat-input">Сообщение</label>
-          <textarea id="chat-input" placeholder="Напишите вопрос, адрес, время доставки или ответ клиенту."></textarea>
-        </div>
-        <button class="btn" type="submit">Отправить</button>
-      </form>
+      <div id="contract-content" class="contract-paper"></div>
+      <div class="hero-actions" style="margin-top: 14px;">
+        <button class="btn" type="button" id="contract-print-btn">Распечатать договор</button>
+        <button class="btn secondary" type="button" id="contract-copy-btn">Скопировать текст</button>
+      </div>
     </div>
   </div>
 
@@ -1400,6 +1409,50 @@
 
   <script>
     const STORAGE_KEY = "gamerent-uralsk-v3";
+    const SUPABASE_URL = "https://btpxqnyrkpwiqnybkjpf.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0cHhxbnlya3B3aXFueWJranBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MzIzNTEsImV4cCI6MjA5NjIwODM1MX0.W1KKrJ8O1ZpOGzF1LSE7a47CGAJ3szWWaU-MjZZlV_U";
+    const DB = {
+      async get(table) {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&order=id.asc`, {
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+        });
+        return res.ok ? res.json() : [];
+      },
+      async insert(table, row) {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+          method: "POST",
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", Prefer: "return=representation" },
+          body: JSON.stringify(row)
+        });
+        const data = await res.json();
+        return Array.isArray(data) ? data[0] : data;
+      },
+      async update(table, id, row) {
+        await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+          method: "PATCH",
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify(row)
+        });
+      },
+      async remove(table, id) {
+        await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+          method: "DELETE",
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+        });
+      },
+      async upsertUser(userData) {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(userData.email || userData.phone + "@gamerent.kz")}`, {
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+        });
+        const existing = await res.json();
+        if (existing.length) {
+          await DB.update("users", existing[0].id, userData);
+          return { ...existing[0], ...userData };
+        } else {
+          return await DB.insert("users", userData);
+        }
+      }
+    };
     const MONEY = new Intl.NumberFormat("ru-RU");
     const CATEGORIES = ["all", "PlayStation", "Xbox", "VR", "Nintendo", "Accessory"];
     const bookingFilters = ["all", "pending", "active", "done"];
@@ -1504,21 +1557,6 @@
       const date = new Date(`${value}T12:00:00`);
       return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short" }).format(date).replace(".", "");
     }
-    function formatDateTime(value) {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return "только что";
-      return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(date).replace(".", "");
-    }
-    function roleLabel(role) {
-      return role === "owner" ? "Владелец" : "Арендатор";
-    }
-    function bookingChat(booking) {
-      if (!Array.isArray(booking.messages)) booking.messages = [];
-      return booking.messages;
-    }
-    function chatCount(booking) {
-      return bookingChat(booking).length;
-    }
     function hasGoogleClientId() {
       return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes("PASTE_") && GOOGLE_CLIENT_ID.endsWith(".apps.googleusercontent.com");
     }
@@ -1602,33 +1640,60 @@
       clearTimeout(toast._timer);
       toast._timer = setTimeout(() => $("toast").classList.remove("show"), 2600);
     }
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        user: state.user,
-        consoles: state.consoles,
-        bookings: state.bookings,
-      }));
+    function saveLocalUser() {
+      localStorage.setItem(STORAGE_KEY + "-user", JSON.stringify(state.user));
     }
-    function loadState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        state.consoles = cloneDefaults();
-        state.bookings = [];
-        state.user = null;
-        return;
-      }
+    function loadLocalUser() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY + "-user")); } catch { return null; }
+    }
+    // Legacy saveState — тек localStorage-ке жазады (консольдар мен брондар үшін Supabase)
+    function saveState() { saveLocalUser(); }
+
+    async function loadState() {
+      // 1. Пайдаланушыны localStorage-тен аламыз
+      state.user = loadLocalUser();
+      // 2. Консольдарды Supabase-тен аламыз
       try {
-        const parsed = JSON.parse(raw);
-        state.user = parsed.user ?? null;
-        state.consoles = Array.isArray(parsed.consoles) && parsed.consoles.length ? parsed.consoles : cloneDefaults();
-        state.bookings = Array.isArray(parsed.bookings) ? parsed.bookings : [];
-        state.bookings.forEach((booking) => {
-          if (!Array.isArray(booking.messages)) booking.messages = [];
-        });
-      } catch {
+        const [cons, books] = await Promise.all([DB.get("consoles"), DB.get("bookings")]);
+        if (cons && cons.length) {
+          state.consoles = cons.map(c => ({
+            id: c.id, name: c.name, category: c.category, price: c.price,
+            status: c.status || "available", emoji: c.image || "🎮",
+            description: c.description || "", deposit: c.deposit || 0
+          }));
+        } else {
+          // Supabase бос болса — default деректерді жүктейміз
+          state.consoles = cloneDefaults();
+          // және Supabase-ке сақтаймыз
+          for (const c of state.consoles) {
+            await DB.insert("consoles", { name: c.name, category: c.category, price: c.price, status: c.status, image: c.emoji, description: c.description, deposit: c.deposit || 0 });
+          }
+          const freshCons = await DB.get("consoles");
+          if (freshCons && freshCons.length) state.consoles = freshCons.map(c => ({ id: c.id, name: c.name, category: c.category, price: c.price, status: c.status || "available", emoji: c.image || "🎮", description: c.description || "", deposit: c.deposit || 0 }));
+        }
+        if (books && books.length) {
+          const consMap = Object.fromEntries(state.consoles.map(c => [c.id, c]));
+          state.bookings = books.map(b => ({
+            id: b.id, consoleId: b.console_id,
+            console: consMap[b.console_id]?.name || "—",
+            category: consMap[b.console_id]?.category || "—",
+            client: b.note ? JSON.parse(b.note).client || "—" : "—",
+            phone: b.note ? JSON.parse(b.note).phone || "" : "",
+            from: b.from_date, to: b.to_date,
+            rawStart: b.from_date, rawEnd: b.to_date,
+            days: Math.max(1, Math.round((new Date(b.to_date) - new Date(b.from_date)) / 86400000)),
+            deliveryMode: b.note ? JSON.parse(b.note).deliveryMode || "pickup" : "pickup",
+            extraController: b.note ? JSON.parse(b.note).extraController || false : false,
+            controllerFee: 0, address: b.note ? JSON.parse(b.note).address || "" : "",
+            total: b.total || 0, status: b.status || "pending"
+          })).sort((a, b) => b.id - a.id);
+        } else {
+          state.bookings = [];
+        }
+      } catch(e) {
+        console.error("Supabase load error:", e);
         state.consoles = cloneDefaults();
         state.bookings = [];
-        state.user = null;
       }
     }
     function seedCurrentBooking() {
@@ -1799,10 +1864,7 @@
     function renderBookings() {
       const filter = state.filters.booking;
       const list = $("bookings-list");
-      const visibleBookings = state.user?.role === "owner"
-        ? state.bookings
-        : state.bookings.filter((item) => !state.user || item.phone === state.user.phone);
-      const items = visibleBookings.filter((item) => filter === "all" || item.status === filter);
+      const items = state.bookings.filter((item) => filter === "all" || item.status === filter);
       $("bookings-summary").textContent = `${items.length} заказов в фильтре`;
       if (!items.length) {
         list.innerHTML = `
@@ -1826,9 +1888,8 @@
             <p>${esc(item.deliveryMode === "delivery" ? "Доставка по адресу" : "Самовывоз")} · ${esc(item.address || "Адрес не указан")}</p>
           </div>
           <div>
-            <p class="meta" style="text-align:right; margin-bottom: 8px;">${esc(item.client)}<br>${esc(item.phone)}</p>
+            <p class="meta" style="text-align:right; margin-bottom: 8px;">${esc(item.name)}<br>${esc(item.phone)}</p>
             <div class="order-actions">
-              <button type="button" class="btn secondary" data-open-chat="${item.id}">Чат <span class="chat-count">${chatCount(item)}</span></button>
               <button type="button" class="btn secondary" data-repeat-booking="${item.consoleId}">Повторить</button>
               ${item.status !== "done" ? `<button type="button" class="btn" data-close-booking="${item.id}">Закрыть</button>` : ""}
             </div>
@@ -1944,7 +2005,6 @@
               <span class="status ${item.status}">${item.status}</span>
             </div>
             <div class="order-actions">
-              <button type="button" class="btn secondary" data-open-chat="${item.id}">Чат <span class="chat-count">${chatCount(item)}</span></button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:pending">Ожидание</button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:active">Активна</button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:done">Закрыта</button>
@@ -1998,62 +2058,6 @@
     function closeModal() {
       $("modal").classList.remove("open");
       state.ui.editingId = null;
-    }
-    function openChat(id) {
-      const booking = state.bookings.find((item) => item.id === id);
-      if (!booking) {
-        toast("Чат не найден", "Бронь могла быть удалена.");
-        return;
-      }
-      if (state.user?.role !== "owner" && booking.phone !== state.user?.phone) {
-        toast("Нет доступа", "Этот чат доступен только владельцу и арендатору по заказу.");
-        return;
-      }
-      state.ui.chatBookingId = id;
-      $("chat-title").textContent = `Чат: ${booking.console}`;
-      $("chat-subtitle").textContent = `${booking.client} · ${booking.phone} · ${booking.from} – ${booking.to}`;
-      $("chat-input").value = "";
-      $("chat-modal").classList.add("open");
-      renderChat();
-      setTimeout(() => $("chat-input").focus(), 80);
-    }
-    function closeChat() {
-      $("chat-modal").classList.remove("open");
-      state.ui.chatBookingId = null;
-    }
-    function renderChat() {
-      const booking = state.bookings.find((item) => item.id === state.ui.chatBookingId);
-      if (!booking) return;
-      const messages = bookingChat(booking);
-      $("chat-messages").innerHTML = messages.length ? messages.map((message) => `
-        <div class="chat-message ${message.role === "owner" ? "owner" : "renter"}">
-          <strong>${esc(message.author)} · ${roleLabel(message.role)}</strong>
-          <p>${esc(message.text)}</p>
-          <time>${formatDateTime(message.createdAt)}</time>
-        </div>
-      `).join("") : `
-        <div class="card" style="box-shadow:none;">
-          <h4 style="margin: 0 0 8px;">Чат пока пустой</h4>
-          <p class="meta" style="margin:0;">Напишите первое сообщение владельцу или арендатору по этой аренде.</p>
-        </div>
-      `;
-      $("chat-messages").scrollTop = $("chat-messages").scrollHeight;
-    }
-    function sendChatMessage(text) {
-      const booking = state.bookings.find((item) => item.id === state.ui.chatBookingId);
-      if (!booking || !state.user) return;
-      const message = {
-        id: Date.now(),
-        role: state.user.role === "owner" ? "owner" : "renter",
-        author: state.user.name || (state.user.role === "owner" ? "Владелец" : booking.client),
-        text,
-        createdAt: new Date().toISOString(),
-      };
-      bookingChat(booking).push(message);
-      saveState();
-      renderChat();
-      renderBookings();
-      if (state.user.role === "owner") renderAdmin();
     }
     function updateNav() {
       document.querySelectorAll(".nav [data-nav]").forEach((btn) => {
@@ -2140,13 +2144,6 @@
         return;
       }
 
-      const chatBtn = event.target.closest("[data-open-chat]");
-      if (chatBtn) {
-        if (!requireUser()) return;
-        openChat(Number(chatBtn.dataset.openChat));
-        return;
-      }
-
       const closeBookingBtn = event.target.closest("[data-close-booking]");
       if (closeBookingBtn) {
         const id = Number(closeBookingBtn.dataset.closeBooking);
@@ -2178,7 +2175,7 @@
         const order = state.bookings.find((item) => item.id === Number(id));
         if (order) {
           order.status = status;
-          saveState();
+          DB.update("bookings", order.id, { status }).catch(() => {});
           render();
           toast("Статус обновлён", `Заказ переведён в состояние "${status}".`);
         }
@@ -2208,6 +2205,46 @@
     });
     $("success-bookings-btn").addEventListener("click", () => navigate("bookings"));
     $("success-home-btn").addEventListener("click", () => navigate("home"));
+
+    $("success-contract-btn").addEventListener("click", () => {
+      const booking = state.bookings.find(b => b.id === state.ui.chatBookingId)
+        || [...state.bookings].sort((a, b) => b.id - a.id)[0];
+      if (!booking) return toast("Нет брони", "Сначала создайте бронь.");
+      const con = state.consoles.find(c => c.id === booking.consoleId);
+      const user = state.user || {};
+      const today = new Date().toLocaleDateString("ru-RU");
+      const from = new Date(booking.from).toLocaleDateString("ru-RU");
+      const to = new Date(booking.to).toLocaleDateString("ru-RU");
+      const days = Math.max(1, Math.round((new Date(booking.to) - new Date(booking.from)) / 86400000));
+      const price = con ? con.price * days : 0;
+      $("contract-content").innerHTML = `
+        <h4>ДОГОВОР АРЕНДЫ ИГРОВОЙ КОНСОЛИ</h4>
+        <div class="contract-row"><span class="contract-label">Дата договора</span><span>${today}</span></div>
+        <div class="contract-row"><span class="contract-label">Арендодатель</span><span>GameRent Uralsk, г. Уральск</span></div>
+        <div class="contract-row"><span class="contract-label">Арендатор</span><span>${user.name || "—"}</span></div>
+        <div class="contract-row"><span class="contract-label">Предмет аренды</span><span>${con ? con.name : "—"}</span></div>
+        <div class="contract-row"><span class="contract-label">Период аренды</span><span>${from} — ${to} (${days} дн.)</span></div>
+        <div class="contract-row"><span class="contract-label">Сумма аренды</span><span>${MONEY.format(price)} ₸</span></div>
+        <div class="contract-section"><strong>Условия договора:</strong><ol>
+          <li>Арендатор обязуется вернуть консоль в надлежащем состоянии в указанный срок.</li>
+          <li>При повреждении оборудования арендатор возмещает полную стоимость ремонта.</li>
+          <li>Оплата производится до выдачи консоли на руки.</li>
+          <li>Продление срока аренды согласовывается с арендодателем заранее.</li>
+          <li>Настоящий договор составлен в двух экземплярах, имеющих равную юридическую силу.</li>
+        </ol></div>
+        <div class="contract-signatures">
+          <div><div class="signature-line">Арендодатель: _______________</div></div>
+          <div><div class="signature-line">Арендатор: _______________</div></div>
+        </div>`;
+      $("contract-modal").classList.add("open");
+    });
+    $("contract-close-btn").addEventListener("click", () => $("contract-modal").classList.remove("open"));
+    $("contract-modal").addEventListener("click", e => { if (e.target === $("contract-modal")) $("contract-modal").classList.remove("open"); });
+    $("contract-print-btn").addEventListener("click", () => window.print());
+    $("contract-copy-btn").addEventListener("click", () => {
+      const text = $("contract-content").innerText;
+      navigator.clipboard.writeText(text).then(() => toast("Скопировано", "Текст договора скопирован в буфер."));
+    });
     $("admin-back-btn").addEventListener("click", () => navigate("profile"));
     $("admin-add-btn").addEventListener("click", () => {
       if (!requireOwner()) return;
@@ -2217,27 +2254,12 @@
     $("modal").addEventListener("click", (event) => {
       if (event.target === $("modal")) closeModal();
     });
-    $("chat-close-btn").addEventListener("click", closeChat);
-    $("chat-modal").addEventListener("click", (event) => {
-      if (event.target === $("chat-modal")) closeChat();
-    });
-    $("chat-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      if (!requireUser()) return;
-      const text = $("chat-input").value.trim();
-      if (!text) {
-        toast("Сообщение пустое", "Напишите текст перед отправкой.");
-        return;
-      }
-      sendChatMessage(text);
-      $("chat-input").value = "";
-    });
     $("modal-remove-btn").addEventListener("click", () => {
       const id = Number($("console-id").value);
       if (!id) return;
       state.consoles = state.consoles.filter((item) => item.id !== id);
       state.bookings = state.bookings.filter((item) => item.consoleId !== id);
-      saveState();
+      DB.remove("consoles", id).catch(() => {});
       closeModal();
       render();
       toast("Удалено", "Карточка консоли удалена из каталога.");
@@ -2288,7 +2310,9 @@
         return;
       }
       state.user = { name, phone, role, note };
-      saveState();
+      // Supabase-ке пайдаланушыны сақтаймыз
+      DB.upsertUser({ name, phone, role, email: phone + "@gamerent.kz", created_at: new Date().toISOString() }).catch(() => {});
+      saveLocalUser();
       toast("Профиль сохранён", role === "owner" ? "Открываю кабинет владельца." : "Открываю каталог.");
       navigate(role === "owner" ? "admin" : "home", false);
       if (role === "owner") {
@@ -2334,22 +2358,19 @@
         address: $("booking-address").value.trim(),
         total: totals.total,
         status: "pending",
-        messages: [
-          {
-            id: Date.now() + 1,
-            role: "renter",
-            author: state.user.name,
-            text: `Здравствуйте! Я забронировал ${item.name} на ${totals.days} дн. ${$("booking-delivery").value === "delivery" ? "Нужна доставка." : "Планирую самовывоз."}`,
-            createdAt: new Date().toISOString(),
-          },
-        ],
       };
+      // Supabase-ке бронды сақтаймыз
+      const noteData = JSON.stringify({ client: booking.client, phone: booking.phone, deliveryMode: booking.deliveryMode, extraController: booking.extraController, address: booking.address });
+      DB.insert("bookings", { console_id: booking.consoleId, from_date: booking.rawStart, to_date: booking.rawEnd, status: "pending", total: booking.total, note: noteData }).then(row => {
+        if (row && row.id) { booking.id = row.id; state.ui.chatBookingId = row.id; }
+      }).catch(() => {});
       state.bookings.unshift(booking);
+      state.ui.chatBookingId = booking.id;
       saveState();
-      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. ${booking.extraController ? "Дополнительный джойстик добавлен за 500 ₸. " : ""}Сумма заказа ${formatMoney(booking.total)}. В разделе броней уже доступен чат с владельцем.`;
+      $("success-text").textContent = `${booking.console} забронирована на ${booking.days} дн. ${booking.extraController ? "Дополнительный джойстик добавлен за 500 ₸. " : ""}Сумма заказа ${formatMoney(booking.total)}. Статус можно менять в кабинете владельца.`;
       navigate("success", true);
       render();
-      toast("Бронь создана", "Заказ сохранился в истории.");
+      toast("Бронь создана", "Заказ сохранён в Supabase.");
     });
 
     $("console-form").addEventListener("submit", (event) => {
@@ -2372,13 +2393,16 @@
       if (id) {
         const index = state.consoles.findIndex((entry) => entry.id === id);
         if (index >= 0) state.consoles[index] = item;
+        DB.update("consoles", id, { name: item.name, category: item.category, price: item.price, status: item.status, image: item.emoji, description: item.description }).catch(() => {});
       } else {
+        DB.insert("consoles", { name: item.name, category: item.category, price: item.price, status: item.status, image: item.emoji, description: item.description, deposit: 0 }).then(row => {
+          if (row && row.id) { item.id = row.id; state.consoles[0] = item; render(); }
+        }).catch(() => {});
         state.consoles.unshift(item);
       }
-      saveState();
       closeModal();
       render();
-      toast("Сохранено", "Каталог обновлён.");
+      toast("Сохранено", "Каталог обновлён в Supabase.");
     });
 
     $("profile-edit-btn").addEventListener("click", () => {
@@ -2391,35 +2415,38 @@
       }
     });
 
-    loadState();
-    if (!state.consoles.length) state.consoles = cloneDefaults();
-    if (state.bookings.length) {
-      state.bookings = state.bookings.sort((a, b) => b.id - a.id);
-    }
-    seedCurrentBooking();
-
-    if (state.user) {
-      $("auth-name").value = state.user.name || "";
-      $("auth-phone").value = state.user.phone || "";
-      $("auth-role").value = state.user.role || "renter";
-      $("auth-note").value = state.user.note || "";
-      navigate(state.user.role === "owner" ? "admin" : "home", false);
-      if (state.user.role === "owner") {
-        adminTabSet("dashboard");
+    // Async init — Supabase-тен деректерді жүктейміз
+    (async () => {
+      toast("Жүктелуде…", "Supabase-тен деректер алынуда.");
+      await loadState();
+      if (!state.consoles.length) state.consoles = cloneDefaults();
+      if (state.bookings.length) {
+        state.bookings = state.bookings.sort((a, b) => b.id - a.id);
       }
-    } else {
-      render();
-    }
+      seedCurrentBooking();
 
-    render();
-    initGoogleAuth();
-    setBookingFilter("all");
+      if (state.user) {
+        $("auth-name").value = state.user.name || "";
+        $("auth-phone").value = state.user.phone || "";
+        $("auth-role").value = state.user.role || "renter";
+        $("auth-note").value = state.user.note || "";
+        navigate(state.user.role === "owner" ? "admin" : "home", false);
+        if (state.user.role === "owner") {
+          adminTabSet("dashboard");
+        }
+      } else {
+        render();
+      }
+
+      render();
+      initGoogleAuth();
+      setBookingFilter("all");
+    })();
     adminTabSet(state.ui.adminTab);
     $("booking-start").min = todayValue(1);
     $("booking-end").min = todayValue(1);
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && $("modal").classList.contains("open")) closeModal();
-      if (event.key === "Escape" && $("chat-modal").classList.contains("open")) closeChat();
     });
 
     setInterval(() => {
