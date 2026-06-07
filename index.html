@@ -1326,9 +1326,12 @@
         <div class="section-head" style="margin-top: 0;">
           <div>
             <h3 class="section-title">Мои брони</h3>
-            <p class="section-subtitle">История заказов хранится в браузере и обновляется после каждой новой аренды.</p>
+            <p class="section-subtitle">История заказов хранится в браузере және обновляется после каждой новой аренды.</p>
           </div>
-          <button class="btn secondary" id="bookings-refresh-btn" type="button">Обновить</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn secondary" id="bookings-refresh-btn" type="button">Обновить</button>
+            <button class="btn secondary" id="bookings-clear-btn" type="button" style="color:var(--danger); border-color:var(--danger);">🗑 Очистить</button>
+          </div>
         </div>
         <div class="toolbar">
           <div class="left">
@@ -1529,8 +1532,12 @@
     const SUPABASE_URL = "https://btpxqnyrkpwiqnybkjpf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0cHhxbnlya3B3aXFueWJranBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MzIzNTEsImV4cCI6MjA5NjIwODM1MX0.W1KKrJ8O1ZpOGzF1LSE7a47CGAJ3szWWaU-MjZZlV_U";
     const DB = {
-      async get(table) {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&order=id.asc`, {
+      async get(table, ownerPhone) {
+        let url = `${SUPABASE_URL}/rest/v1/${table}?select=*&order=id.asc`;
+        if (ownerPhone && table === "consoles") {
+          url += `&owner_phone=eq.${encodeURIComponent(ownerPhone)}`;
+        }
+        const res = await fetch(url, {
           headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
         });
         return res.ok ? res.json() : [];
@@ -1791,9 +1798,13 @@
     async function loadState() {
       // 1. Пайдаланушыны localStorage-тен аламыз
       state.user = loadLocalUser();
-      // 2. Консольдарды Supabase-тен аламыз
+      const ownerPhone = (state.user?.role === "owner") ? state.user.phone : null;
+      // 2. Консольдарды Supabase-тен аламыз (владелец болса — тек өзінікін)
       try {
-        const [cons, books] = await Promise.all([DB.get("consoles"), DB.get("bookings")]);
+        const [cons, books] = await Promise.all([
+          DB.get("consoles", ownerPhone),
+          DB.get("bookings")
+        ]);
         if (cons && cons.length) {
           state.consoles = cons.map(c => ({
             id: c.id, name: c.name, category: c.category, price: c.price,
@@ -2007,7 +2018,12 @@
     function renderBookings() {
       const filter = state.filters.booking;
       const list = $("bookings-list");
-      const items = state.bookings.filter((item) => filter === "all" || item.status === filter);
+      // Клиент тек өз брондарын көреді
+      const myPhone = state.user?.phone || "";
+      const myBookings = state.user?.role === "owner"
+        ? state.bookings
+        : state.bookings.filter(b => b.phone === myPhone);
+      const items = myBookings.filter((item) => filter === "all" || item.status === filter);
       $("bookings-summary").textContent = `${items.length} заказов в фильтре`;
       if (!items.length) {
         list.innerHTML = `
@@ -2490,6 +2506,19 @@
     $("booking-delivery").addEventListener("change", renderBookingScreen);
     $("booking-extra-controller").addEventListener("change", renderBookingScreen);
     $("bookings-refresh-btn").addEventListener("click", renderBookings);
+    $("bookings-clear-btn").addEventListener("click", async () => {
+      const myPhone = state.user?.phone || "";
+      if (!myPhone) return toast("Кіріңіз", "Алдымен профильге кіріңіз.");
+      const myBookings = state.bookings.filter(b => b.phone === myPhone);
+      if (!myBookings.length) return toast("Брон жоқ", "Тазалайтын брон табылмады.");
+      if (!confirm(`${myBookings.length} броньды өшіресіз бе? Бұл әрекетті қайтару мүмкін емес.`)) return;
+      for (const b of myBookings) {
+        await DB.remove("bookings", b.id).catch(() => {});
+      }
+      state.bookings = state.bookings.filter(b => b.phone !== myPhone);
+      renderBookings();
+      toast("Тазаланды", "Сіздің барлық брондарыңыз өшірілді.");
+    });
     $("signout-btn").addEventListener("click", () => {
       state.user = null;
       saveState();
@@ -2670,7 +2699,7 @@
         if (index >= 0) state.consoles[index] = item;
         DB.update("consoles", id, { name: item.name, category: item.category, price: item.price, status: item.status, image: item.emoji, description: item.description }).catch(() => {});
       } else {
-        DB.insert("consoles", { name: item.name, category: item.category, price: item.price, status: item.status, image: item.emoji, description: item.description, deposit: 0 }).then(row => {
+        DB.insert("consoles", { name: item.name, category: item.category, price: item.price, status: item.status, image: item.emoji, description: item.description, deposit: 0, owner_phone: state.user?.phone || "" }).then(row => {
           if (row && row.id) { item.id = row.id; state.consoles[0] = item; render(); }
         }).catch(() => {});
         state.consoles.unshift(item);
