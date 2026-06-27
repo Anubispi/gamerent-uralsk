@@ -2767,8 +2767,17 @@
       const w = document.getElementById("chat-window");
       const b = document.getElementById("chat-bubble");
       const isOpen = w.style.display === "flex";
-      w.style.display = isOpen ? "none" : "flex";
-      b.style.transform = isOpen ? "scale(1)" : "scale(0.9)";
+      const newState = !isOpen;
+
+      w.style.display = newState ? "flex" : "none";
+      b.style.transform = newState ? "scale(0.9)" : "scale(1)";
+      b.setAttribute("aria-expanded", newState);
+
+      if (newState) {
+        document.getElementById("chat-input").focus();
+      } else {
+        b.focus();
+      }
     }
 
     function addMsg(text, role) {
@@ -2832,7 +2841,7 @@
   </script>
 
   <!-- Чат-бот -->
-  <div id="chat-bubble" onclick="toggleChat()" style="position:fixed;bottom:24px;right:24px;z-index:1000;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#6ee7ff,#8b5cf6);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px rgba(110,231,255,0.3);font-size:24px;transition:transform .2s">💬</div>
+  <button id="chat-bubble" onclick="toggleChat()" aria-label="Чатты ашу" aria-expanded="false" style="position:fixed;bottom:24px;right:24px;z-index:1000;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#6ee7ff,#8b5cf6);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px rgba(110,231,255,0.3);font-size:24px;transition:transform .2s;border:none;">💬</button>
 
   <div id="chat-window" style="display:none;position:fixed;bottom:90px;right:24px;z-index:1000;width:340px;max-height:480px;border-radius:20px;background:rgba(12,20,32,0.97);border:1px solid rgba(255,255,255,0.1);box-shadow:0 24px 60px rgba(0,0,0,0.5);overflow:hidden;flex-direction:column">
     <div style="padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between">
@@ -2843,9 +2852,9 @@
           <div style="font-size:.75rem;color:#58d68d">● онлайн</div>
         </div>
       </div>
-      <button onclick="toggleChat()" style="background:none;border:none;color:#9bacc3;font-size:20px;cursor:pointer;line-height:1">×</button>
+      <button onclick="toggleChat()" aria-label="Чатты жабу" style="background:none;border:none;color:#9bacc3;font-size:20px;cursor:pointer;line-height:1">×</button>
     </div>
-    <div id="chat-messages" style="padding:14px;overflow-y:auto;max-height:320px;display:flex;flex-direction:column;gap:10px">
+    <div id="chat-messages" role="log" aria-live="polite" style="padding:14px;overflow-y:auto;max-height:320px;display:flex;flex-direction:column;gap:10px">
       <div class="chat-msg bot">Сәлем! Мен GameRent AI-мін. Консольдер, баға, жеткізу туралы сұраңыз 🎮</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
         <button class="chat-quick" onclick="sendQuick('Бос консольдер қайсы?')">Бос консольдер</button>
@@ -2855,8 +2864,8 @@
       </div>
     </div>
     <div style="padding:10px 14px;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:8px">
-      <input id="chat-input" placeholder="Сұрақ жазыңыз..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f4f7fb;font-size:.85rem;outline:none" />
-      <button onclick="sendChat()" style="background:linear-gradient(135deg,#6ee7ff,#8b5cf6);border:none;border-radius:12px;padding:0 16px;cursor:pointer;font-size:18px">↑</button>
+      <input id="chat-input" aria-label="Хабарлама енгізіңіз" placeholder="Сұрақ жазыңыз..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f4f7fb;font-size:.85rem;outline:none" />
+      <button onclick="sendChat()" aria-label="Хабарлама жіберу" style="background:linear-gradient(135deg,#6ee7ff,#8b5cf6);border:none;border-radius:12px;padding:0 16px;cursor:pointer;font-size:18px">↑</button>
     </div>
   </div>
 
