@@ -1,0 +1,3 @@
+## 2026-06-28 - [Accessibility & Interactivity in Chat Widgets]
+**Learning:** In highly custom SPAs with specific gradients and shadows, converting non-semantic `div` bubbles to `<button>` requires explicit style resets (`border: none`, `padding: 0`) to prevent visual regression. Interactive elements like quick-replies should always be `<button>` elements to support the `disabled` attribute natively during async requests.
+**Action:** Use semantic `<button>` for all interactive "chips" and bubbles; apply `3px solid var(--accent)` for `:focus-visible` to maintain accessibility while matching the app's neon theme.
