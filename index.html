@@ -7,6 +7,11 @@
   <meta name="description" content="Аренда игровых консолей в Уральске. Бронирование, доставка и кабинет владельца работают прямо в браузере." />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
       --bg: #081019;
@@ -28,8 +33,8 @@
       --radius-md: 16px;
       --radius-sm: 12px;
       --maxw: 1180px;
-      --font-head: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
-      --font-body: "Segoe UI", system-ui, sans-serif;
+      --font-head: "Inter", "Segoe UI", system-ui, sans-serif;
+      --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -161,11 +166,11 @@
       box-shadow: 0 0 0 4px rgba(88,214,141,0.15);
     }
 
-    .screen { display: none; animation: fadeUp 220ms ease-out; }
+    .screen { display: none; animation: fadeUp 400ms cubic-bezier(0.16, 1, 0.3, 1); }
     .screen.active { display: block; }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .hero {
@@ -177,10 +182,10 @@
 
     .panel {
       background: var(--panel);
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(24px);
     }
 
     .panel.pad { padding: 22px; }
@@ -259,17 +264,24 @@
       justify-content: center;
       gap: 10px;
       min-height: 50px;
-      padding: 0 18px;
+      padding: 0 24px;
       border-radius: 999px;
       color: white;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 18px 34px rgba(110, 231, 255, 0.14);
-      transition: transform 160ms ease, filter 160ms ease;
+      background-size: 200% auto;
+      box-shadow: 0 8px 24px rgba(110, 231, 255, 0.2);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       font-weight: 700;
       text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(110, 231, 255, 0.3);
+      filter: brightness(1.1);
+      background-position: right center;
+    }
     .btn.secondary {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
@@ -458,6 +470,12 @@
       flex-direction: column;
       gap: 14px;
       min-height: 100%;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .console-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(110, 231, 255, 0.1);
+      border-color: rgba(110, 231, 255, 0.2);
     }
 
     .console-top {
@@ -843,8 +861,8 @@
     }
 
     @media (max-width: 700px) {
-      .app { width: min(100vw - 20px, var(--maxw)); }
-      .hero-main { padding: 20px; min-height: auto; }
+      .app { width: 100%; padding: 12px; }
+      .hero-main { padding: 20px; min-height: auto; border-radius: var(--radius-lg); }
       .hero h2 { font-size: clamp(2.1rem, 14vw, 3.4rem); max-width: 10ch; }
       .stats,
       .catalog,
@@ -859,8 +877,11 @@
       }
       .nav {
         grid-template-columns: repeat(5, minmax(0, 1fr));
-        padding: 10px;
+        padding: 6px;
+        bottom: 8px;
+        width: calc(100% - 16px);
       }
+      .nav button b { font-size: 1.2rem; }
       .nav button {
         min-height: 50px;
       }
@@ -1103,6 +1124,10 @@
                 <input class="input" id="auth-phone" name="phone" placeholder="+7 7XX XXX XX XX" autocomplete="tel" />
               </div>
               <div>
+                <label for="auth-whatsapp">WhatsApp (для связи)</label>
+                <input class="input" id="auth-whatsapp" name="whatsapp" placeholder="+7 7XX XXX XX XX" autocomplete="tel" />
+              </div>
+              <div class="full">
                 <label for="auth-role">Тип аккаунта</label>
                 <select class="input" id="auth-role" name="role">
                   <option value="renter">Клиент</option>
@@ -1124,6 +1149,19 @@
             </p>
           </form>
         </div>
+      </div>
+    </section>
+
+    <section id="screen-map" class="screen">
+      <div class="panel pad" style="height: calc(100vh - 200px); display: flex; flex-direction: column;">
+        <div class="section-head" style="margin-top: 0;">
+          <div>
+            <h3 class="section-title">Карта владельцев</h3>
+            <p class="section-subtitle">Здесь можно увидеть расположение консолей для самовывоза в Уральске.</p>
+          </div>
+          <button class="btn secondary" type="button" id="refresh-map-btn">Обновить</button>
+        </div>
+        <div id="map-container" style="flex: 1; border-radius: 18px; border: 1px solid var(--line); overflow: hidden; z-index: 1;"></div>
       </div>
     </section>
 
@@ -1365,10 +1403,30 @@
             </div>
             <div class="hero-actions" style="margin: 0;">
               <button class="btn secondary" type="button" id="profile-edit-btn">Редактировать профиль</button>
+            <button class="btn secondary" type="button" id="profile-location-btn">Указать местоположение</button>
               <button class="btn danger" type="button" id="signout-btn">Выйти</button>
             </div>
           </div>
           <div class="kpi-grid" id="profile-kpis"></div>
+        </div>
+
+        <div id="subscription-panel" class="panel pad hidden">
+          <div class="section-head" style="margin-top: 0;">
+            <div>
+              <h3 class="section-title">Подписка владельца</h3>
+              <p class="section-subtitle">С подпиской комиссия 0%, без подписки — 10% с каждого заказа.</p>
+            </div>
+          </div>
+          <div class="summary-visual" style="min-height: 160px; background: linear-gradient(135deg, rgba(110, 231, 255, 0.1), rgba(139, 92, 246, 0.1));">
+             <div>
+                <div class="badge" id="sub-status-badge">Нет подписки</div>
+                <h4 id="sub-title" style="margin: 10px 0 5px;">990 ₸ / месяц</h4>
+                <p id="sub-desc" style="font-size: 0.85rem; color: var(--muted);">Подписка позволяет сохранять 100% дохода от аренды.</p>
+             </div>
+             <div class="hero-actions" style="margin-top: 10px;">
+                <button class="btn" id="subscribe-btn" type="button">Оформить подписку</button>
+             </div>
+          </div>
         </div>
 
         <div class="panel pad">
@@ -1441,11 +1499,34 @@
 
   <nav class="nav" aria-label="Главная навигация">
     <button type="button" class="active" data-nav="home"><b>⌂</b><span>Каталог</span></button>
+    <button type="button" data-nav="map"><b>📍</b><span>Карта</span></button>
     <button type="button" data-nav="bookings"><b>◫</b><span>Брони</span></button>
     <button type="button" data-nav="profile"><b>◉</b><span>Профиль</span></button>
     <button type="button" data-nav="admin"><b>⚙</b><span>Владелец</span></button>
     <button type="button" data-nav="auth"><b>⇆</b><span>Вход</span></button>
   </nav>
+
+  <div id="modal-payment" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+    <div class="modal">
+      <div class="section-head" style="margin-top: 0;">
+        <div>
+          <h3 id="payment-title" class="section-title">Оплата подписки</h3>
+          <p class="section-subtitle">Переведите 990 ₸ через Kaspi по номеру телефона.</p>
+        </div>
+        <button class="btn secondary" type="button" onclick="$('modal-payment').classList.remove('open')">Закрыть</button>
+      </div>
+      <div class="stack" style="text-align: center; padding: 20px 0;">
+         <div style="font-size: 3rem; margin-bottom: 10px;">💳</div>
+         <h4 style="margin: 0;">Kaspi Gold</h4>
+         <p style="font-size: 1.2rem; font-weight: 700; color: var(--accent); margin: 10px 0;">+7 700 123 45 67</p>
+         <p class="meta">После перевода нажмите кнопку «Я оплатил», чтобы активировать подписку на 30 дней.</p>
+         <div class="hero-actions" style="justify-content: center;">
+            <button class="btn" id="payment-confirm-btn" type="button">Я оплатил</button>
+            <a href="https://kaspi.kz" target="_blank" class="btn secondary">Открыть Kaspi.kz</a>
+         </div>
+      </div>
+    </div>
+  </div>
 
   <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal">
@@ -1655,8 +1736,9 @@
       user: null,
       consoles: [],
       bookings: [],
+      users: [],
       filters: { category: "all", search: "", booking: "all" },
-      ui: { screen: "auth", history: [], adminTab: "dashboard", editingId: null, bookingConsoleId: 1, chatBookingId: null },
+      ui: { screen: "auth", history: [], adminTab: "dashboard", editingId: null, bookingConsoleId: 1, chatBookingId: null, map: null },
     };
 
     const refs = {};
@@ -1716,6 +1798,45 @@
         toast("Google вход не выполнен", "Не удалось прочитать ответ Google. Попробуйте ещё раз.");
       }
     }
+    function initMap() {
+      if (!window.L) return;
+      if (state.ui.map) {
+        state.ui.map.remove();
+        state.ui.map = null;
+      }
+      const map = L.map('map-container').setView([51.2333, 51.3667], 12); // Уральск
+      state.ui.map = map;
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+      }).addTo(map);
+
+      // Добавляем владельцев на карту
+      const owners = state.users.filter(u => u.role === 'owner' && u.lat && u.lng);
+      owners.forEach(owner => {
+        const marker = L.marker([owner.lat, owner.lng]).addTo(map);
+        const consolesCount = state.consoles.filter(c => c.ownerPhone === owner.phone).length;
+        const waNumber = (owner.whatsapp || owner.phone || "").replace(/\D/g, '');
+        marker.bindPopup(`
+          <div style="color: #333;">
+            <strong style="font-size: 1.1rem;">${esc(owner.name)}</strong><br>
+            <span>Владелец консолей (${consolesCount})</span><br>
+            ${waNumber ? `<a href="https://wa.me/${waNumber}" target="_blank" style="display:inline-block; margin-top:8px; padding:6px 12px; background:#25D366; color:white; border-radius:8px; text-decoration:none; font-weight:bold;">WhatsApp</a>` : ""}
+          </div>
+        `);
+      });
+
+      // Показываем текущее местоположение клиента, если разрешено
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const { latitude, longitude } = pos.coords;
+          L.circleMarker([latitude, longitude], { radius: 8, color: 'var(--accent)', fillColor: 'var(--accent)', fillOpacity: 0.8 })
+            .addTo(map)
+            .bindPopup("<span style='color:#333;'>Вы здесь</span>");
+        });
+      }
+    }
+
     function initGoogleAuth() {
       const box = $("google-login-box");
       if (!box) return;
@@ -1796,25 +1917,42 @@
     function saveState() { saveLocalUser(); }
 
     async function loadState() {
-      // 1. Пайдаланушыны localStorage-тен аламыз
       state.user = loadLocalUser();
+      if (state.user && state.user.phone) {
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/users?phone=eq.${encodeURIComponent(state.user.phone)}`, {
+            headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+          });
+          const data = await res.json();
+          if (data && data.length) {
+            state.user = { ...state.user, ...data[0] };
+            saveLocalUser();
+          }
+        } catch (e) { console.error("Error fetching current user:", e); }
+      }
       const ownerPhone = (state.user?.role === "owner") ? state.user.phone : null;
-      // 2. Консольдарды Supabase-тен аламыз (владелец болса — тек өзінікін)
       try {
-        const [cons, books] = await Promise.all([
+        const usersUrl = `${SUPABASE_URL}/rest/v1/users?select=id,name,phone,whatsapp,role,lat,lng`;
+        const usersRes = await fetch(usersUrl, {
+          headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+        });
+        const [cons, books, users] = await Promise.all([
           DB.get("consoles", ownerPhone),
-          DB.get("bookings")
+          DB.get("bookings"),
+          usersRes.ok ? usersRes.json() : []
         ]);
         if (cons && cons.length) {
           state.consoles = cons.map(c => ({
             id: c.id, name: c.name, category: c.category, price: c.price,
             status: c.status || "available", emoji: c.image || "🎮",
-            description: c.description || "", deposit: c.deposit || 0
+            description: c.description || "", deposit: c.deposit || 0,
+            ownerPhone: c.owner_phone
           }));
         } else {
           // Supabase бос — консольдер жоқ, владелец өзі қосады
           state.consoles = [];
         }
+        state.users = users || [];
         if (books && books.length) {
           const consMap = Object.fromEntries(state.consoles.map(c => [c.id, c]));
           state.bookings = books.map(b => ({
@@ -1876,6 +2014,9 @@
         btn.classList.toggle("active", btn.dataset.nav === screen);
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
+      if (screen === "map") {
+        setTimeout(initMap, 100);
+      }
     }
     function goBack() {
       const prev = state.ui.history.pop();
@@ -1968,7 +2109,12 @@
              </div>`;
         return;
       }
-      $("catalog-list").innerHTML = items.map((item) => `
+      $("catalog-list").innerHTML = items.map((item) => {
+        const owner = state.users.find(u => u.phone === item.ownerPhone);
+        const waNumber = (owner?.whatsapp || item.ownerPhone || "").replace(/\D/g, '');
+        const waLink = waNumber ? `<a href="https://wa.me/${waNumber}?text=${encodeURIComponent('Сәлеметсіз бе! Мен ' + item.name + ' консолін жалға алу туралы сұрайын деп едім.')}" target="_blank" class="btn secondary" style="background: #25D366; color: white; border: none;">WhatsApp</a>` : "";
+
+        return `
         <article class="card console-card">
           <div class="console-top">
             <div class="icon-box" aria-hidden="true">${esc(item.emoji || "🎮")}</div>
@@ -1988,9 +2134,10 @@
           <div class="hero-actions" style="margin: 0;">
             <button class="btn" type="button" data-book="${item.id}" ${item.status !== "available" ? "disabled style='opacity:.6; cursor:not-allowed;'" : ""}>Забронировать</button>
             <button class="btn secondary" type="button" data-copy="${item.id}">Подробнее</button>
+            ${waLink}
           </div>
         </article>
-      `).join("");
+      `}).join("");
     }
     function renderBookingScreen() {
       const item = currentConsole();
@@ -2034,7 +2181,18 @@
         `;
         return;
       }
-      list.innerHTML = items.map((item) => `
+      list.innerHTML = items.map((item) => {
+        const consoleItem = state.consoles.find(c => c.id === item.consoleId);
+        const owner = state.users.find(u => u.phone === consoleItem?.ownerPhone);
+        const client = state.users.find(u => u.phone === item.phone);
+
+        // If viewing as client, contact owner. If viewing as owner, contact client.
+        const targetUser = state.user?.role === 'owner' ? client : owner;
+        const targetPhone = targetUser?.whatsapp || targetUser?.phone || item.phone || (state.user?.role === 'owner' ? '' : consoleItem?.ownerPhone);
+        const waNumber = (targetPhone || "").replace(/\D/g, '');
+        const waLink = waNumber ? `<a href="https://wa.me/${waNumber}" target="_blank" class="btn secondary" style="background: #25D366; color: white; border: none;">WhatsApp</a>` : "";
+
+        return `
         <article class="list-item">
           <div>
             <div style="display:flex; gap: 10px; flex-wrap: wrap; align-items:center; margin-bottom: 8px;">
@@ -2047,14 +2205,15 @@
             <p>${esc(item.deliveryMode === "delivery" ? "Доставка по адресу" : "Самовывоз")} · ${esc(item.address || "Адрес не указан")}</p>
           </div>
           <div>
-            <p class="meta" style="text-align:right; margin-bottom: 8px;">${esc(item.name)}<br>${esc(item.phone)}</p>
+            <p class="meta" style="text-align:right; margin-bottom: 8px;">${esc(item.client || item.name)}<br>${esc(item.phone)}</p>
             <div class="order-actions">
               <button type="button" class="btn secondary" data-repeat-booking="${item.consoleId}">Повторить</button>
               ${item.status !== "done" ? `<button type="button" class="btn" data-close-booking="${item.id}">Закрыть</button>` : ""}
+              ${waLink}
             </div>
           </div>
         </article>
-      `).join("");
+      `}).join("");
     }
     function renderProfile() {
       if (!state.user) {
@@ -2063,12 +2222,32 @@
         $("profile-phone").textContent = "Войдите, чтобы увидеть персональные данные.";
         $("profile-kpis").innerHTML = "";
         $("profile-admin-btn").disabled = true;
+        $("subscription-panel").classList.add("hidden");
         return;
       }
       $("profile-role-badge").textContent = state.user.role === "owner" ? "Владелец" : "Клиент";
       $("profile-name").textContent = state.user.name;
       $("profile-phone").textContent = `${state.user.phone}${state.user.note ? " · " + state.user.note : ""}`;
       $("profile-admin-btn").disabled = state.user.role !== "owner";
+
+      if (state.user.role === "owner") {
+        $("subscription-panel").classList.remove("hidden");
+        const hasSub = state.user.subscribedUntil && new Date(state.user.subscribedUntil) > new Date();
+        $("sub-status-badge").textContent = hasSub ? "Подписка активна" : "Нет подписки";
+        $("sub-status-badge").style.background = hasSub ? "rgba(88, 214, 141, 0.15)" : "rgba(255, 107, 107, 0.15)";
+        $("sub-status-badge").style.color = hasSub ? "var(--success)" : "var(--danger)";
+        $("subscribe-btn").textContent = hasSub ? "Продлить подписку" : "Оформить подписку";
+        if (hasSub) {
+          $("sub-title").textContent = "До " + new Date(state.user.subscribedUntil).toLocaleDateString();
+          $("sub-desc").textContent = "Ваша комиссия составляет 0%. Спасибо за подписку!";
+        } else {
+          $("sub-title").textContent = "990 ₸ / месяц";
+          $("sub-desc").textContent = "С подпиской комиссия 0%, без подписки — 10% с каждого заказа.";
+        }
+      } else {
+        $("subscription-panel").classList.add("hidden");
+      }
+
       const myBookings = state.bookings.filter((item) => item.phone === state.user.phone);
       const totalSpent = myBookings.reduce((sum, item) => sum + Number(item.total || 0), 0);
       const active = myBookings.filter((item) => item.status === "active").length;
@@ -2104,13 +2283,18 @@
       adminTabSet(state.ui.adminTab);
     }
     function renderAdminDashboard() {
+      const hasSub = state.user?.subscribedUntil && new Date(state.user.subscribedUntil) > new Date();
       const totalRevenue = state.bookings.reduce((sum, item) => sum + Number(item.total || 0), 0);
+      const commission = hasSub ? 0 : totalRevenue * 0.1;
+      const netProfit = totalRevenue - commission;
+
       const active = state.bookings.filter((item) => item.status === "active").length;
       const pending = state.bookings.filter((item) => item.status === "pending").length;
       const available = state.consoles.filter((item) => item.status === "available").length;
       $("admin-dashboard").innerHTML = `
         <div class="kpi-grid" style="grid-column: 1 / -1;">
           <div class="kpi"><strong>${formatMoney(totalRevenue)}</strong><span>оборот по бронированиям</span></div>
+          <div class="kpi"><strong>${formatMoney(netProfit)}</strong><span>чистая прибыль ${hasSub ? "(0% ком.)" : "(10% ком.)"}</span></div>
           <div class="kpi"><strong>${active}</strong><span>активных заказов</span></div>
           <div class="kpi"><strong>${pending}</strong><span>ожидают подтверждения</span></div>
           <div class="kpi"><strong>${available}</strong><span>единиц доступно</span></div>
@@ -2160,7 +2344,12 @@
       `).join("");
     }
     function renderAdminOrders() {
-      $("admin-orders").innerHTML = state.bookings.length ? state.bookings.map((item) => `
+      $("admin-orders").innerHTML = state.bookings.length ? state.bookings.map((item) => {
+        const client = state.users.find(u => u.phone === item.phone);
+        const waNumber = (client?.whatsapp || item.phone || "").replace(/\D/g, '');
+        const waLink = waNumber ? `<a href="https://wa.me/${waNumber}" target="_blank" class="btn secondary" style="background: #25D366; color: white; border: none;">WhatsApp</a>` : "";
+
+        return `
         <div class="list-item">
           <div>
             <h4>${esc(item.console)} · ${esc(item.client)}</h4>
@@ -2176,10 +2365,11 @@
               <button type="button" class="btn secondary" data-order-status="${item.id}:pending">Ожидание</button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:active">Активна</button>
               <button type="button" class="btn secondary" data-order-status="${item.id}:done">Закрыта</button>
+              ${waLink}
             </div>
           </div>
         </div>
-      `).join("") : `<div class="card"><p class="meta" style="margin:0;">Заказов пока нет.</p></div>`;
+      `}).join("") : `<div class="card"><p class="meta" style="margin:0;">Заказов пока нет.</p></div>`;
     }
     function renderAdminClients() {
       const clients = clientGroups();
@@ -2420,6 +2610,26 @@
     $("success-bookings-btn").addEventListener("click", () => navigate("bookings"));
     $("success-home-btn").addEventListener("click", () => navigate("home"));
 
+    $("subscribe-btn")?.addEventListener("click", () => {
+      $("modal-payment").classList.add("open");
+    });
+    $("payment-confirm-btn")?.addEventListener("click", () => {
+      const until = new Date();
+      until.setDate(until.getDate() + 30);
+      state.user.subscribedUntil = until.toISOString();
+      saveLocalUser();
+      DB.upsertUser({
+        phone: state.user.phone,
+        name: state.user.name,
+        role: state.user.role,
+        email: state.user.phone + "@gamerent.kz",
+        subscribedUntil: state.user.subscribedUntil
+      }).catch(() => {});
+      $("modal-payment").classList.remove("open");
+      render();
+      toast("Подписка активна", "Спасибо! Ваша подписка активирована на 30 дней.");
+    });
+
     $("success-contract-btn").addEventListener("click", () => {
       const booking = state.bookings.find(b => b.id === state.ui.chatBookingId)
         || [...state.bookings].sort((a, b) => b.id - a.id)[0];
@@ -2530,15 +2740,16 @@
       event.preventDefault();
       const name = $("auth-name").value.trim();
       const phone = $("auth-phone").value.trim();
+      const whatsapp = $("auth-whatsapp").value.trim();
       const role = $("auth-role").value;
       const note = $("auth-note").value.trim();
       if (!name || !phone) {
         toast("Заполните поля", "Нужно указать имя и телефон.");
         return;
       }
-      state.user = { name, phone, role, note };
+      state.user = { ...state.user, name, phone, whatsapp, role, note };
       // Supabase-ке пайдаланушыны сақтаймыз
-      DB.upsertUser({ name, phone, role, email: phone + "@gamerent.kz", created_at: new Date().toISOString() }).catch(() => {});
+      DB.upsertUser({ name, phone, whatsapp, role, email: phone + "@gamerent.kz", created_at: new Date().toISOString() }).catch(() => {});
       saveLocalUser();
       toast("Профиль сохранён", role === "owner" ? "Открываю кабинет владельца." : "Открываю каталог.");
       navigate(role === "owner" ? "admin" : "home", false);
@@ -2709,11 +2920,45 @@
       toast("Сохранено", "Каталог обновлён в Supabase.");
     });
 
+    $("refresh-map-btn")?.addEventListener("click", () => {
+      loadState().then(initMap);
+    });
+
+    $("profile-location-btn")?.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        toast("Ошибка", "Геолокация не поддерживается вашим браузером.");
+        return;
+      }
+      toast("Определение...", "Пожалуйста, разрешите доступ к вашему местоположению.");
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+        state.user.lat = latitude;
+        state.user.lng = longitude;
+        saveLocalUser();
+        DB.upsertUser({
+          phone: state.user.phone,
+          name: state.user.name,
+          role: state.user.role,
+          email: state.user.phone + "@gamerent.kz",
+          lat: latitude,
+          lng: longitude
+        }).then(() => {
+          toast("Успех", "Ваше местоположение сохранено.");
+          loadState(); // Обновляем список пользователей для карты
+        }).catch(() => {
+          toast("Ошибка", "Не удалось сохранить координаты в базу данных.");
+        });
+      }, (err) => {
+        toast("Ошибка", "Не удалось получить координаты: " + err.message);
+      });
+    });
+
     $("profile-edit-btn").addEventListener("click", () => {
       navigate("auth");
       if (state.user) {
         $("auth-name").value = state.user.name;
         $("auth-phone").value = state.user.phone;
+        $("auth-whatsapp").value = state.user.whatsapp || "";
         $("auth-role").value = state.user.role;
         $("auth-note").value = state.user.note || "";
       }
@@ -2732,6 +2977,7 @@
       if (state.user) {
         $("auth-name").value = state.user.name || "";
         $("auth-phone").value = state.user.phone || "";
+        $("auth-whatsapp").value = state.user.whatsapp || "";
         $("auth-role").value = state.user.role || "renter";
         $("auth-note").value = state.user.note || "";
         navigate(state.user.role === "owner" ? "admin" : "home", false);
@@ -2876,7 +3122,19 @@
     .chat-msg{padding:10px 14px;border-radius:14px;font-size:.84rem;line-height:1.55;max-width:90%;word-break:break-word}
     .chat-msg.bot{background:rgba(255,255,255,0.07);color:#f4f7fb;align-self:flex-start;border-bottom-left-radius:4px}
     .chat-msg.user{background:linear-gradient(135deg,rgba(110,231,255,0.2),rgba(139,92,246,0.2));color:#f4f7fb;align-self:flex-end;border-bottom-right-radius:4px}
-    .chat-msg.typing{color:#9bacc3;font-style:italic}
+    .chat-msg.typing{color:#9bacc3;font-style:italic;display:flex;align-items:center;gap:4px}
+    .chat-msg.typing::after {
+      content: "";
+      width: 4px;
+      height: 4px;
+      background: currentColor;
+      border-radius: 50%;
+      animation: blink 1.4s infinite both;
+    }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0; }
+      40% { opacity: 1; }
+    }
     .chat-quick{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:999px;padding:5px 12px;color:#9bacc3;font-size:.78rem;cursor:pointer;transition:.15s;font-family:inherit}
     .chat-quick:hover{background:rgba(110,231,255,0.1);color:#6ee7ff;border-color:rgba(110,231,255,0.3)}
   </style>
