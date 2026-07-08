@@ -2128,7 +2128,7 @@
             <p>${esc(item.from)} – ${esc(item.to)} · ${formatMoney(item.total)}</p>
             <p>${item.extraController ? `Доп. джойстик: да · ${formatMoney(item.controllerFee || EXTRA_CONTROLLER_PRICE)}` : "Доп. джойстик: нет"}</p>
           </div>
-          <span class="status ${item.status}">${item.status}</span>
+          <span class="status ${item.status}">${esc(item.status)}</span>
         </div>
       `).join("") : `<p class="meta">Пока нет заказов для отображения.</p>`;
     }
@@ -2170,7 +2170,7 @@
           </div>
           <div>
             <div style="text-align:right; margin-bottom: 10px;">
-              <span class="status ${item.status}">${item.status}</span>
+              <span class="status ${item.status}">${esc(item.status)}</span>
             </div>
             <div class="order-actions">
               <button type="button" class="btn secondary" data-order-status="${item.id}:pending">Ожидание</button>
@@ -2391,8 +2391,8 @@
         <h4>ДОГОВОР АРЕНДЫ ИГРОВОЙ КОНСОЛИ</h4>
         <div class="contract-row"><span class="contract-label">Дата договора</span><span>${today}</span></div>
         <div class="contract-row"><span class="contract-label">Арендодатель</span><span>GameRent Uralsk, г. Уральск</span></div>
-        <div class="contract-row"><span class="contract-label">Арендатор</span><span>${user.name || "—"}</span></div>
-        <div class="contract-row"><span class="contract-label">Предмет аренды</span><span>${con ? con.name : "—"}</span></div>
+        <div class="contract-row"><span class="contract-label">Арендатор</span><span>${esc(user.name || "—")}</span></div>
+        <div class="contract-row"><span class="contract-label">Предмет аренды</span><span>${esc(con ? con.name : "—")}</span></div>
         <div class="contract-row"><span class="contract-label">Период аренды</span><span>${from} — ${to}${days ? " (" + days + " дн.)" : ""}</span></div>
         <div class="contract-row"><span class="contract-label">Сумма аренды</span><span>${MONEY.format(price)} ₸</span></div>
         <div class="contract-section"><strong>Условия договора:</strong><ol>
@@ -2435,8 +2435,8 @@
         <h4>ДОГОВОР АРЕНДЫ ИГРОВОЙ КОНСОЛИ</h4>
         <div class="contract-row"><span class="contract-label">Дата договора</span><span>${today}</span></div>
         <div class="contract-row"><span class="contract-label">Арендодатель</span><span>GameRent Uralsk, г. Уральск</span></div>
-        <div class="contract-row"><span class="contract-label">Арендатор</span><span>${user.name || "—"}</span></div>
-        <div class="contract-row"><span class="contract-label">Предмет аренды</span><span>${con ? con.name : "—"}</span></div>
+        <div class="contract-row"><span class="contract-label">Арендатор</span><span>${esc(user.name || "—")}</span></div>
+        <div class="contract-row"><span class="contract-label">Предмет аренды</span><span>${esc(con ? con.name : "—")}</span></div>
         <div class="contract-row"><span class="contract-label">Период аренды</span><span>${from} — ${to} (${days} дн.)</span></div>
         <div class="contract-row"><span class="contract-label">Сумма аренды</span><span>${MONEY.format(price)} ₸</span></div>
         <div class="contract-section"><strong>Условия договора:</strong><ol>
@@ -2761,7 +2761,7 @@
         : `Сайт готов к работе · ${openOrders} активных, ${pending} в ожидании`;
     }, 10000);
 
-    const GEMINI_KEY = "AQ.Ab8RN6JG41WtvzhhOoFyWeaH8t_Rg4QNTGhtGxaERj-L13aV0g";
+    const GEMINI_KEY = "";
 
     function toggleChat() {
       const w = document.getElementById("chat-window");
@@ -2797,6 +2797,11 @@
       if (btn) btn.disabled = true;
       quickBtns.forEach(b => b.disabled = true);
       addMsg(text, "user");
+
+      if (!GEMINI_KEY || GEMINI_KEY === "PASTE_GEMINI_KEY_HERE") {
+        addMsg("Жүйелік қате: Gemini API key орнатылмаған. Владелецке хабарласыңыз.", "bot");
+        return;
+      }
 
       const typing = addMsg("жазылуда...", "bot typing");
 

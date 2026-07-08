@@ -1,0 +1,4 @@
+## 2024-06-27 - [Sentinel: Security Assessment of GameRent Uralsk]
+**Vulnerability:** Hardcoded API keys (Gemini) and multiple XSS vulnerabilities in templates using `innerHTML` with unescaped user-controlled or database-sourced data (e.g., user names, console names, and status fields in contract generation and admin dashboards).
+**Learning:** Single-page applications that manage state locally and use Supabase for persistence may inadvertently trust data when rendering templates, leading to XSS if not consistently escaped. Hardcoding keys for convenience during development is a common but critical risk.
+**Prevention:** Always use a sanitization function (like the existing `esc()`) when injecting data into `innerHTML`. Use environment variables or configuration prompts for API keys instead of hardcoding them in the source code.
